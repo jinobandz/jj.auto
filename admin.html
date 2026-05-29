@@ -134,7 +134,7 @@ input:focus,select:focus{border-color:var(--ac);box-shadow:0 0 0 2px rgba(255,77
 <!-- Login -->
 <div id="login">
   <div class="login-box">
-    <div class="login-logo">BEAR</div>
+    <div class="login-logo">JJAuto</div>
     <div class="login-sub">Admin Access</div>
     <input type="text" id="l-user" placeholder="Username" autocomplete="off">
     <input type="password" id="l-pass" placeholder="Password" onkeydown="if(event.key==='Enter')doLogin()">
@@ -149,7 +149,7 @@ input:focus,select:focus{border-color:var(--ac);box-shadow:0 0 0 2px rgba(255,77
 <div class="wrap" id="main" style="display:none">
 
 <header>
-  <div class="logo">BEAR <span style="font-size:.7rem;color:var(--mut);margin-left:6px">ADMIN</span></div>
+  <div class="logo">JJAuto <span style="font-size:.7rem;color:var(--mut);margin-left:6px">ADMIN</span></div>
   <div style="display:flex;align-items:center;gap:14px">
     <div class="abadge"><div class="adot"></div>ADMIN SESSION</div>
     <div style="font-family:'Share Tech Mono',monospace;font-size:0.78rem;color:var(--mut)" id="clk"></div>
@@ -492,7 +492,7 @@ input:focus,select:focus{border-color:var(--ac);box-shadow:0 0 0 2px rgba(255,77
 <script>
 // ══ ADMIN CONFIG ═══════════════════════
 const ADMIN_USER='admin';
-const ADMIN_PASS='bear2025';
+const ADMIN_PASS='jjontop';
 
 // ══ KEY BLOCK ═══════════════════════════
 (function(){
@@ -579,7 +579,7 @@ function getWhUrl(){
 async function sendWH(url,title,desc,color=0x00d4ff,fields=[]){
   if(!url)return;
   try{
-    const body={embeds:[{title,description:desc,color,footer:{text:'Bear Admin'},timestamp:new Date().toISOString()}]};
+    const body={embeds:[{title,description:desc,color,footer:{text:'JJAuto Admin'},timestamp:new Date().toISOString()}]};
     if(fields.length)body.embeds[0].fields=fields;
     await fetch(url,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});
   }catch(e){console.warn('WH error:',e);}
@@ -694,7 +694,7 @@ function startPerfAutoPing(){
 // ══ SERVICE STATUS SYSTEM ══════════════
 const SVCK='bra_services';
 const SERVICES=[
-  {id:'panel',name:'User Panel',desc:'Main Bear user interface'},
+  {id:'panel',name:'User Panel',desc:'Main JJAuto user interface'},
   {id:'autoadv',name:'Auto Advertiser',desc:'Slot-based ad sending engine'},
   {id:'autodm',name:'Auto DM',desc:'DM reply bot module'},
 ];
@@ -721,7 +721,7 @@ function setAllStatus(status){
   const cfg=STATUS_CONFIG[status];
   const inc=document.getElementById('status-incident')?.value?.trim()||'';
   const desc=inc?`${cfg.emoji} All services set to **${cfg.label}**\n\n> ${inc}`:`${cfg.emoji} All services set to **${cfg.label}**`;
-  sendStatusWH(`${cfg.emoji} Bear — ${cfg.label}`,desc,cfg.discordColor);
+  sendStatusWH(`${cfg.emoji} JJAuto — ${cfg.label}`,desc,cfg.discordColor);
   toast(`All services set to ${cfg.label}`,'success');
 }
 function renderServices(){
@@ -773,7 +773,7 @@ async function broadcastStatus(){
   const cfg=STATUS_CONFIG[overall];
   const fields=SERVICES.map(s=>{const st=states[s.id]||'operational';const sc=STATUS_CONFIG[st];return{name:s.name,value:`${sc.emoji} ${sc.label}`,inline:true};});
   const desc=inc?`> ${inc}\n\n**Service Breakdown:**`:'**Service Breakdown:**';
-  await sendStatusWH(`${cfg.emoji} Bear Status — ${cfg.label}`,desc,cfg.discordColor,fields);
+  await sendStatusWH(`${cfg.emoji} JJAuto Status — ${cfg.label}`,desc,cfg.discordColor,fields);
   toast('Status broadcast sent!','success');
 }
 function refreshStatus(){
