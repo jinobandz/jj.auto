@@ -10,10 +10,10 @@ const PLANS = {
 };
 
 const WALLETS = {
-  BTC: 'bc1qzuw5e2yk3f0s4xtz478lgecjf7a778j8dahn4h',
-  ETH: '0x37dA20A6F5F28922513b418067DE1afF468F4d8a',
-  LTC: 'Lcf7pkW4AMQKFqfQWQRxG4edEXFHoFgn6r',
-  SOL: 'G4drhxouQWVveybE5TKHnzgjHMxhBwxzXwfE1vfFdRnK',
+  BTC: 'bc1qqc6ctmdjlwznwz6r66nrxluz66ud98r7j3727u',
+  ETH: '0xbe3b29B1D4f7Bf789F7dF8531eb2464AE1A3C809',
+  LTC: 'LeMysHcWkDpfg57EztkHGXBjoy1cuKDmZL',
+  SOL: '745sQDPstBRAGBn37aDpdfdE9SbZskChgHkkUZovbZSY',
 };
 
 // Fetch live crypto price from CoinGecko (free, no API key)
