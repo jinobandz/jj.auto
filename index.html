@@ -1,0 +1,1293 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>JJAuto — Panel</title>
+<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Rajdhani:wght@300;400;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#050816;--sur:#0b1224;--sur2:#111b34;--bdr:#1d4ed8;--ac:#3b82f6;--ac2:#2563eb;--ac3:#60a5fa;--dng:#ef4444;--wrn:#f59e0b;--txt:#dbeafe;--mut:#93c5fd;--glow:0 0 20px rgba(59,130,246,0.35)}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--txt);font-family:'Rajdhani',sans-serif;min-height:100vh;overflow-x:hidden;user-select:none;-webkit-user-select:none}
+body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(rgba(232,135,58,0.04) 1px,transparent 1px),linear-gradient(90deg,rgba(232,135,58,0.04) 1px,transparent 1px);background-size:40px 40px;pointer-events:none;z-index:0}
+body::after{content:'';position:fixed;inset:0;background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,0.07) 2px,rgba(0,0,0,0.07) 4px);pointer-events:none;z-index:0}
+
+
+/* AUTH SCREEN */
+#auth-screen{position:fixed;inset:0;background:var(--bg);z-index:9990;display:flex;align-items:center;justify-content:center}
+#auth-screen::before{content:'';position:fixed;inset:0;background-image:linear-gradient(rgba(232,135,58,0.04) 1px,transparent 1px),linear-gradient(90deg,rgba(232,135,58,0.04) 1px,transparent 1px);background-size:40px 40px;pointer-events:none}
+.auth-box{background:var(--sur);border:1px solid var(--bdr);border-radius:16px;padding:40px 36px;width:380px;max-width:95vw;text-align:center;position:relative;z-index:1}
+.auth-box::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--ac),var(--ac2));border-radius:16px 16px 0 0}
+.auth-logo{font-family:'Share Tech Mono',monospace;font-size:1.7rem;color:var(--ac);text-shadow:var(--glow);letter-spacing:3px;margin-bottom:4px}
+.auth-logo span{color:var(--ac2)}
+.auth-sub{font-size:0.72rem;color:var(--mut);letter-spacing:2px;text-transform:uppercase;margin-bottom:24px;font-family:'Share Tech Mono',monospace}
+.auth-tabs{display:flex;border-radius:8px;overflow:hidden;border:1px solid var(--bdr);margin-bottom:20px}
+.auth-tab{flex:1;padding:9px;background:transparent;border:none;color:var(--mut);font-family:'Rajdhani',sans-serif;font-weight:700;font-size:0.85rem;letter-spacing:1px;cursor:pointer;transition:.2s;text-transform:uppercase}
+.auth-tab.on{background:rgba(232,135,58,0.1);color:var(--ac)}
+.auth-pane{display:none}.auth-pane.on{display:block}
+.auth-box input{background:var(--sur2);border:1px solid var(--bdr);border-radius:8px;color:var(--txt);font-family:'Share Tech Mono',monospace;font-size:0.88rem;padding:11px 14px;outline:none;width:100%;margin-bottom:10px;transition:border-color .2s}
+.auth-box input:focus{border-color:var(--ac);box-shadow:0 0 0 2px rgba(232,135,58,0.1)}
+.auth-btn{width:100%;padding:12px;background:var(--ac);color:#000;border:none;border-radius:8px;font-family:'Rajdhani',sans-serif;font-weight:700;font-size:1rem;letter-spacing:1.5px;text-transform:uppercase;cursor:pointer;transition:.2s}
+.auth-btn:hover{box-shadow:var(--glow);transform:translateY(-1px)}
+.auth-msg{font-family:'Share Tech Mono',monospace;font-size:0.78rem;min-height:20px;margin-top:8px}
+.auth-msg.err{color:var(--dng)}.auth-msg.ok{color:var(--ac3)}
+.buy-box{margin-top:18px;padding:12px 14px;background:rgba(232,135,58,0.04);border:1px solid var(--bdr);border-radius:9px;font-family:'Share Tech Mono',monospace;font-size:0.75rem;color:var(--mut);line-height:1.8}
+.buy-box a{color:var(--ac);text-decoration:none;font-weight:700}
+.buy-box a:hover{text-decoration:underline}
+.crypto-row{display:flex;align-items:center;gap:8px;background:rgba(255,255,255,0.03);border:1px solid var(--bdr);border-radius:7px;padding:6px 10px;cursor:pointer;transition:.2s;user-select:none}
+.crypto-row:hover{border-color:var(--ac);background:rgba(0,212,255,0.05)}
+.crypto-tag{font-size:0.68rem;font-weight:700;letter-spacing:1px;padding:2px 7px;border-radius:5px;flex-shrink:0}
+.crypto-addr{font-family:'Share Tech Mono',monospace;font-size:0.75rem;color:var(--txt);flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.crypto-copy{font-size:0.8rem;flex-shrink:0;opacity:0.5}
+.plan-btn{padding:10px;border:1px solid var(--bdr);border-radius:8px;text-align:center;cursor:pointer;font-family:'Share Tech Mono',monospace;font-size:0.8rem;color:var(--mut);transition:.2s;background:var(--sur2)}
+.plan-btn:hover,.plan-btn.on{border-color:var(--ac);color:var(--ac);background:rgba(232,135,58,0.07)}
+.coin-btn{padding:10px;border:1px solid var(--bdr);border-radius:8px;text-align:center;cursor:pointer;font-family:'Share Tech Mono',monospace;font-size:0.82rem;color:var(--mut);transition:.2s;background:var(--sur2);display:flex;align-items:center;justify-content:center;gap:7px}
+.coin-btn:hover,.coin-btn.on{border-color:var(--ac2);color:var(--txt);background:rgba(196,92,26,0.07)}
+.pay-spinner{width:14px;height:14px;border:2px solid var(--bdr);border-top-color:var(--ac);border-radius:50%;animation:spin .8s linear infinite;flex-shrink:0}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* KEY BADGE */
+.key-badge{display:flex;align-items:center;gap:7px;font-size:0.77rem;font-family:'Share Tech Mono',monospace;color:var(--ac3);background:rgba(16,185,129,0.08);border:1px solid rgba(16,185,129,0.25);border-radius:20px;padding:4px 12px}
+.key-badge.expiring{color:var(--wrn);background:rgba(245,158,11,0.08);border-color:rgba(245,158,11,0.3)}
+.key-badge.expired{color:var(--dng);background:rgba(239,68,68,0.08);border-color:rgba(239,68,68,0.3)}
+.key-dot{width:7px;height:7px;border-radius:50%;background:currentColor;box-shadow:0 0 6px currentColor;animation:bl 2s infinite;flex-shrink:0}
+
+.wrap{position:relative;z-index:1;max-width:1060px;margin:0 auto;padding:22px 18px 60px}
+header{display:flex;align-items:center;justify-content:space-between;padding:18px 26px;border:1px solid var(--bdr);background:linear-gradient(135deg,rgba(232,135,58,0.06),rgba(196,92,26,0.06));border-radius:12px;margin-bottom:22px;position:relative;overflow:hidden;flex-wrap:wrap;gap:10px}
+header::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--ac),var(--ac2))}
+.logo{font-family:'Share Tech Mono',monospace;font-size:1.5rem;color:var(--ac);text-shadow:var(--glow);letter-spacing:2px}
+.logo span{color:var(--ac2)}
+.hdr-r{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.clk{font-family:'Share Tech Mono',monospace;font-size:0.78rem;color:var(--mut)}
+.sbadge{display:flex;align-items:center;gap:7px;font-size:0.8rem;color:var(--mut);font-family:'Share Tech Mono',monospace}
+.sdot{width:8px;height:8px;border-radius:50%;background:var(--ac3);box-shadow:0 0 8px var(--ac3);animation:bl 2s infinite}
+@keyframes bl{0%,100%{opacity:1}50%{opacity:0.3}}
+.logout-mini{background:transparent;border:1px solid var(--bdr);color:var(--mut);border-radius:6px;padding:4px 11px;font-size:0.72rem;font-family:'Share Tech Mono',monospace;cursor:pointer;transition:.2s}
+.logout-mini:hover{border-color:var(--dng);color:var(--dng)}
+.srow{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px}
+.sc{background:var(--sur);border:1px solid var(--bdr);border-radius:10px;padding:14px 18px;text-align:center}
+.sv{font-size:1.8rem;font-weight:700;font-family:'Share Tech Mono',monospace;color:var(--ac);text-shadow:var(--glow)}
+.sl{font-size:0.7rem;letter-spacing:1.5px;text-transform:uppercase;color:var(--mut);margin-top:3px}
+.tabs{display:flex;gap:4px;margin-bottom:20px;border-bottom:1px solid var(--bdr)}
+.tb{padding:9px 20px;background:none;border:none;border-bottom:2px solid transparent;color:var(--mut);font-family:'Rajdhani',sans-serif;font-size:0.92rem;font-weight:600;letter-spacing:1px;cursor:pointer;transition:all .2s;text-transform:uppercase}
+.tb:hover{color:var(--txt)}
+.tb.on{color:var(--ac);border-bottom-color:var(--ac);text-shadow:var(--glow)}
+.tc{display:none}.tc.on{display:block}
+.card{background:var(--sur);border:1px solid var(--bdr);border-radius:12px;padding:22px;margin-bottom:18px;position:relative;overflow:hidden}
+.card::before{content:'';position:absolute;top:0;left:0;width:3px;height:100%;background:linear-gradient(180deg,var(--ac),var(--ac2))}
+.ct{font-size:1rem;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--ac);margin-bottom:16px;display:flex;align-items:center;gap:9px;flex-wrap:wrap}
+.fg{display:grid;grid-template-columns:1fr 1fr;gap:13px}
+.f{display:flex;flex-direction:column;gap:5px}
+.f.s2{grid-column:span 2}
+label{font-size:0.73rem;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;color:var(--mut);font-family:'Share Tech Mono',monospace}
+input,textarea,select{background:var(--sur2);border:1px solid var(--bdr);border-radius:7px;color:var(--txt);font-family:'Share Tech Mono',monospace;font-size:0.87rem;padding:9px 13px;outline:none;transition:border-color .2s,box-shadow .2s;width:100%}
+input:focus,textarea:focus{border-color:var(--ac);box-shadow:0 0 0 2px rgba(232,135,58,0.1)}
+textarea{resize:vertical;min-height:76px}
+.vlist{display:flex;flex-direction:column;gap:7px;margin-top:7px}
+.vi{display:flex;gap:7px;align-items:flex-start}
+.vi textarea{min-height:52px;font-size:0.81rem}
+.rb{background:transparent;border:1px solid var(--dng);color:var(--dng);border-radius:6px;padding:4px 9px;cursor:pointer;font-size:0.73rem;flex-shrink:0;margin-top:2px;transition:.2s}
+.rb:hover{background:rgba(239,68,68,0.12)}
+.avbtn{background:transparent;border:1px dashed var(--bdr);color:var(--mut);border-radius:7px;padding:7px 14px;cursor:pointer;font-size:0.8rem;font-family:'Share Tech Mono',monospace;transition:.2s;margin-top:6px;width:100%}
+.avbtn:hover{border-color:var(--ac);color:var(--ac)}
+.tr{display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--bdr)}
+.tr:last-child{border-bottom:none}
+.tl{font-weight:600;font-size:0.91rem}
+.td{font-size:0.76rem;color:var(--mut);margin-top:2px}
+.tg{position:relative;width:46px;height:25px;flex-shrink:0}
+.tg input{opacity:0;width:0;height:0}
+.sl2{position:absolute;inset:0;background:var(--bdr);border-radius:25px;cursor:pointer;transition:.3s}
+.sl2::before{content:'';position:absolute;width:17px;height:17px;left:4px;top:4px;background:var(--mut);border-radius:50%;transition:.3s}
+input:checked+.sl2{background:rgba(232,135,58,0.18);border:1px solid var(--ac)}
+input:checked+.sl2::before{transform:translateX(21px);background:var(--ac);box-shadow:0 0 8px var(--ac)}
+.br{display:flex;gap:9px;margin-top:16px;flex-wrap:wrap;align-items:center}
+.btn{padding:9px 20px;border-radius:7px;border:none;font-family:'Rajdhani',sans-serif;font-weight:700;font-size:0.88rem;letter-spacing:1.5px;text-transform:uppercase;cursor:pointer;transition:all .2s;display:flex;align-items:center;gap:7px}
+.bp{background:var(--ac);color:#000}.bp:hover{box-shadow:var(--glow);transform:translateY(-1px)}
+.bs{background:transparent;border:1px solid var(--ac);color:var(--ac)}.bs:hover{background:rgba(232,135,58,0.08)}
+.bd{background:transparent;border:1px solid var(--dng);color:var(--dng)}.bd:hover{background:rgba(239,68,68,0.1)}
+.bg{background:var(--ac3);color:#000}.bg:hover{box-shadow:0 0 16px rgba(16,185,129,0.35);transform:translateY(-1px)}
+.btn:disabled{opacity:.4;cursor:not-allowed;transform:none!important;box-shadow:none!important}
+.sbar{display:flex;gap:7px;flex-wrap:wrap;margin-bottom:18px}
+.sbt{padding:7px 16px;border-radius:7px;border:1px solid var(--bdr);background:var(--sur2);color:var(--mut);font-family:'Share Tech Mono',monospace;font-size:0.8rem;cursor:pointer;transition:all .2s;display:flex;align-items:center;gap:6px}
+.sbt.on{border-color:var(--ac);color:var(--ac);background:rgba(232,135,58,0.07)}
+.sbt.run::after{content:'';width:7px;height:7px;border-radius:50%;background:var(--ac3);box-shadow:0 0 6px var(--ac3);animation:bl 1.5s infinite}
+.pill{display:inline-flex;align-items:center;gap:6px;padding:4px 12px;border-radius:20px;background:rgba(16,185,129,0.1);border:1px solid var(--ac3);color:var(--ac3);font-size:0.73rem;font-family:'Share Tech Mono',monospace;margin-left:auto}
+.pill.off{background:rgba(239,68,68,0.08);border-color:var(--dng);color:var(--dng)}
+.lbox{background:#020409;border:1px solid var(--bdr);border-radius:8px;padding:12px;font-family:'Share Tech Mono',monospace;font-size:0.77rem;height:200px;overflow-y:auto;display:flex;flex-direction:column;gap:3px}
+.le{display:flex;gap:9px;animation:fi .3s ease}
+@keyframes fi{from{opacity:0;transform:translateY(3px)}to{opacity:1;transform:none}}
+.lt{color:var(--mut);flex-shrink:0}
+.li{color:var(--ac)}.ls{color:var(--ac3)}.lw{color:var(--wrn)}.ld{color:var(--dng)}
+.hbadge{display:inline-flex;align-items:center;gap:5px;padding:3px 10px;border-radius:20px;background:rgba(196,92,26,0.12);border:1px solid var(--ac2);color:var(--ac2);font-size:0.7rem;font-family:'Share Tech Mono',monospace}
+.hbox{margin-top:14px;border:1px solid var(--bdr);border-radius:8px;padding:14px}
+.hbox-title{font-size:0.76rem;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--ac2);margin-bottom:10px;font-family:'Share Tech Mono',monospace}
+#toast{position:fixed;bottom:26px;right:26px;background:var(--sur);border:1px solid var(--bdr);border-radius:10px;padding:12px 18px;font-family:'Share Tech Mono',monospace;font-size:0.8rem;z-index:9999;transform:translateY(80px);opacity:0;transition:all .3s;max-width:300px}
+#toast.show{transform:translateY(0);opacity:1}
+#toast.success{border-color:var(--ac3);color:var(--ac3)}
+#toast.error{border-color:var(--dng);color:var(--dng)}
+#toast.info{border-color:var(--ac);color:var(--ac)}
+.review-card{background:var(--sur);border:1px solid var(--bdr);border-radius:12px;padding:14px 16px;position:relative;overflow:hidden}
+.review-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--ac),var(--ac2))}
+.review-stars{color:#f59e0b;font-size:0.85rem;margin-bottom:6px;letter-spacing:2px}
+.review-text{font-family:'Share Tech Mono',monospace;font-size:0.78rem;color:var(--txt);line-height:1.6;margin-bottom:8px}
+.review-author{font-size:0.7rem;color:var(--ac);font-family:'Share Tech Mono',monospace;display:flex;align-items:center;gap:6px}
+.review-author::before{content:'—';color:var(--mut)}
+@media(max-width:640px){.fg{grid-template-columns:1fr}.f.s2{grid-column:span 1}.srow{grid-template-columns:1fr 1fr}}
+</style>
+</head>
+<body>
+
+
+
+<!-- AUTH SCREEN -->
+<div id="auth-screen" style="align-items:center;justify-content:center;gap:24px;overflow-y:auto;padding:20px;flex-wrap:wrap">
+  <div class="auth-box">
+    <div class="auth-logo">BEAR</div>
+    <div class="auth-sub">License Required</div>
+    <div class="auth-tabs">
+      <button class="auth-tab on" onclick="authTab('login',this)">Login</button>
+      <button class="auth-tab" onclick="authTab('register',this)">Register</button>
+    </div>
+    <!-- Login -->
+    <div class="auth-pane on" id="auth-login">
+      <input type="text" id="li-user" placeholder="Username" autocomplete="off">
+      <input type="password" id="li-pass" placeholder="Password" onkeydown="if(event.key==='Enter')doLogin()">
+      <button class="auth-btn" onclick="doLogin()">🔓 Login</button>
+    </div>
+    <!-- Register -->
+    <div class="auth-pane" id="auth-register">
+      <input type="text" id="rg-user" placeholder="Choose Username" autocomplete="off">
+      <input type="password" id="rg-pass" placeholder="Choose Password">
+      <input type="text" id="rg-key" placeholder="License Key  e.g. BR-1W-ABCD-EFGH-X2" autocomplete="off" style="text-transform:uppercase" oninput="this.value=this.value.toUpperCase()">
+      <button class="auth-btn" onclick="doRegister()">🗝️ Register &amp; Activate</button>
+    </div>
+    <div class="auth-msg" id="auth-msg"></div>
+    <div class="buy-box">
+      🛒 Need a key? Join our Discord:<br>
+      <a href="https://discord.gg/UZpwzEgMDG" target="_blank">discord.gg/UZpwzEgMDG</a>
+    </div>
+    <button class="auth-btn" onclick="openBuyModal()" style="margin-top:10px;background:linear-gradient(135deg,var(--ac2),var(--ac));color:#000">⚡ Buy with Crypto</button>
+  </div>
+  <!-- REVIEWS SIDEBAR -->
+  <div style="width:320px;max-width:95vw;display:flex;flex-direction:column;gap:10px">
+    <div id="review-stats" style="display:flex;align-items:center;justify-content:center;gap:12px;margin-bottom:4px"></div>
+    <div style="font-family:'Share Tech Mono',monospace;font-size:0.7rem;color:var(--mut);letter-spacing:2px;text-transform:uppercase;text-align:center;margin-bottom:4px">⭐ What users say</div>
+    <div id="reviews-box" style="display:flex;flex-direction:column;gap:10px;max-height:420px;overflow-y:auto"></div>
+  </div>
+</div>
+
+<!-- PAYMENT MODAL -->
+<div id="pay-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.85);z-index:99999;align-items:center;justify-content:center">
+  <div style="background:var(--sur);border:1px solid var(--bdr);border-radius:16px;width:380px;max-width:95vw;position:relative;overflow:hidden">
+    <div style="position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--ac),var(--ac2))"></div>
+    <div style="padding:24px">
+
+      <!-- STEP 1: Pick plan + coin -->
+      <div id="pay-step1">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:18px">
+          <div style="font-family:'Share Tech Mono',monospace;font-size:1rem;color:var(--ac);letter-spacing:2px">BUY LICENSE</div>
+          <button onclick="closeBuyModal()" style="background:none;border:none;color:var(--mut);cursor:pointer;font-size:1.2rem">✕</button>
+        </div>
+        <label style="font-size:0.7rem;letter-spacing:1.5px;color:var(--mut);font-family:'Share Tech Mono',monospace">SELECT PLAN</label>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:8px 0 16px" id="plan-grid"></div>
+        <label style="font-size:0.7rem;letter-spacing:1.5px;color:var(--mut);font-family:'Share Tech Mono',monospace">SELECT COIN</label>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:8px 0 16px" id="coin-grid"></div>
+        <button class="auth-btn" onclick="startPayment()" id="pay-btn" disabled style="opacity:0.4">Continue →</button>
+      </div>
+
+      <!-- STEP 2: Send payment -->
+      <div id="pay-step2" style="display:none">
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:18px">
+          <button onclick="backToStep1()" style="background:none;border:none;color:var(--mut);cursor:pointer;font-size:1rem">←</button>
+          <div style="font-family:'Share Tech Mono',monospace;font-size:1rem;color:var(--ac);letter-spacing:2px">SEND PAYMENT</div>
+        </div>
+        <div style="background:var(--sur2);border:1px solid var(--bdr);border-radius:10px;padding:16px;margin-bottom:14px;text-align:center">
+          <div style="font-size:0.7rem;color:var(--mut);font-family:'Share Tech Mono',monospace;margin-bottom:6px">SEND EXACTLY</div>
+          <div id="pay-amount" style="font-size:1.4rem;font-family:'Share Tech Mono',monospace;color:var(--ac);font-weight:700"></div>
+          <div id="pay-usd" style="font-size:0.75rem;color:var(--mut);font-family:'Share Tech Mono',monospace;margin-top:2px"></div>
+        </div>
+        <div style="font-size:0.7rem;color:var(--mut);font-family:'Share Tech Mono',monospace;margin-bottom:6px;letter-spacing:1px">TO ADDRESS</div>
+        <div style="display:flex;align-items:center;gap:8px;background:var(--sur2);border:1px solid var(--bdr);border-radius:8px;padding:10px 12px;margin-bottom:14px;cursor:pointer" onclick="copyPayAddr()">
+          <div id="pay-addr" style="font-family:'Share Tech Mono',monospace;font-size:0.75rem;color:var(--txt);flex:1;word-break:break-all"></div>
+          <span style="color:var(--ac3);flex-shrink:0">📋</span>
+        </div>
+        <div style="background:rgba(245,158,11,0.08);border:1px solid rgba(245,158,11,0.25);border-radius:8px;padding:10px 12px;font-family:'Share Tech Mono',monospace;font-size:0.73rem;color:var(--wrn);margin-bottom:14px">
+          ⚠️ Send the exact amount shown. Payment expires in <span id="pay-timer">30:00</span>
+        </div>
+        <div style="display:flex;align-items:center;gap:10px;font-family:'Share Tech Mono',monospace;font-size:0.78rem;color:var(--mut)">
+          <div class="pay-spinner"></div>
+          <span id="pay-status">Waiting for payment…</span>
+        </div>
+      </div>
+
+      <!-- STEP 3: Key delivered -->
+      <div id="pay-step3" style="display:none;text-align:center">
+        <div style="font-size:3rem;margin-bottom:12px">🎉</div>
+        <div style="font-family:'Share Tech Mono',monospace;font-size:1rem;color:var(--ac3);letter-spacing:2px;margin-bottom:6px">PAYMENT CONFIRMED</div>
+        <div style="font-size:0.8rem;color:var(--mut);font-family:'Share Tech Mono',monospace;margin-bottom:18px">Your license key is below — copy it and register!</div>
+        <div style="background:var(--sur2);border:1px solid var(--ac3);border-radius:10px;padding:14px;cursor:pointer;margin-bottom:14px" onclick="copyKey()">
+          <div id="pay-key" style="font-family:'Share Tech Mono',monospace;font-size:1rem;color:var(--ac3);font-weight:700;letter-spacing:1px;word-break:break-all"></div>
+          <div style="font-size:0.7rem;color:var(--mut);font-family:'Share Tech Mono',monospace;margin-top:6px">Click to copy</div>
+        </div>
+        <button class="auth-btn" onclick="goRegister()" style="background:var(--ac3);color:#000">📝 Go to Register</button>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<!-- MAIN PANEL -->
+<div class="wrap" id="main-panel" style="display:none">
+
+<header>
+  <div class="logo">BEAR</div>
+  <div class="hdr-r">
+    <div class="clk" id="clk"></div>
+    <div class="key-badge" id="key-badge"><div class="key-dot"></div><span id="key-timer">--</span></div>
+    <div class="sbadge"><div class="sdot"></div>ONLINE</div>
+    <button class="logout-mini" onclick="doLogout()">Logout</button>
+  </div>
+</header>
+
+<div class="srow">
+  <div class="sc"><div class="sv" id="s-ads">0</div><div class="sl">Ads Sent</div></div>
+  <div class="sc"><div class="sv" id="s-dms">0</div><div class="sl">DM Replies</div></div>
+  <div class="sc"><div class="sv" id="s-slots">0</div><div class="sl">Running Slots</div></div>
+  <div class="sc"><div class="sv" id="s-up">0m</div><div class="sl">Uptime</div></div>
+</div>
+
+<div class="tabs">
+  <button class="tb on" onclick="tab('adv',this)">📡 Auto Adv</button>
+  <button class="tb" onclick="tab('dm',this)">💬 Auto DM</button>
+  <button class="tb" onclick="tab('logs',this)">📋 Logs</button>
+  <button class="tb" onclick="tab('support',this)">🎫 Support</button>
+</div>
+
+<!-- AUTO ADV -->
+<div id="tab-adv" class="tc on">
+<div class="card">
+  <div class="ct">📡 ADVERTISER SLOTS <span class="hbadge">🧠 HUMAN MODE</span></div>
+  <div class="sbar" id="sbar"></div>
+  <div class="fg">
+    <div class="f"><label>User Token</label><input type="password" id="a-tok" placeholder="Paste user token..." autocomplete="off"></div>
+    <div class="f"><label>Base Delay (sec)</label><input type="number" id="a-dly" value="180" min="10"></div>
+    <div class="f"><label>Random Offset ± (sec)</label><input type="number" id="a-jit" value="30" min="0"></div>
+    <div class="f"><label>Channel IDs (comma separated)</label><input type="text" id="a-chs" placeholder="ID1, ID2, ID3..."></div>
+  </div>
+  <div style="margin-top:14px">
+    <label>Message Variants <span style="color:var(--mut);font-size:0.68rem">(one picked randomly each send)</span></label>
+    <div class="vlist" id="av-list"></div>
+    <button class="avbtn" onclick="addAV()">＋ Add Variant</button>
+  </div>
+  <div class="hbox">
+    <div class="hbox-title">🧠 HUMANISER OPTIONS</div>
+    <div class="tr"><div><div class="tl">Random Delay Jitter</div><div class="td">Adds ±N seconds so timing looks natural</div></div><label class="tg"><input type="checkbox" id="o-jit" checked><span class="sl2"></span></label></div>
+    <div class="tr"><div><div class="tl">Shuffle Channel Order</div><div class="td">Randomise which channel gets the ad first each cycle</div></div><label class="tg"><input type="checkbox" id="o-shuf" checked><span class="sl2"></span></label></div>
+    <div class="tr"><div><div class="tl">Random Message Variant</div><div class="td">Different variant each send instead of same text</div></div><label class="tg"><input type="checkbox" id="o-var" checked><span class="sl2"></span></label></div>
+    <div class="tr"><div><div class="tl">Per-Channel Micro Delay</div><div class="td">Small random pause (1–4s) between each channel</div></div><label class="tg"><input type="checkbox" id="o-mic" checked><span class="sl2"></span></label></div>
+  </div>
+  <div class="br">
+    <button class="btn bp" onclick="saveSlot()">💾 Save</button>
+    <button class="btn bg" onclick="startSlot()" id="btn-st">🚀 Start</button>
+    <button class="btn bd" onclick="stopSlot()" id="btn-sp" disabled>🛑 Stop</button>
+    <button class="btn bs" onclick="addSlot()">➕ Add Slot</button>
+    <button class="btn bd" onclick="delSlot()">🗑️ Delete</button>
+    <div class="pill off" id="rpill">● STOPPED</div>
+  </div>
+</div>
+</div>
+
+<!-- AUTO DM -->
+<div id="tab-dm" class="tc">
+<div class="card">
+  <div class="ct">💬 AUTO DM REPLY</div>
+  <div class="tr"><div><div class="tl">Enable Auto Reply</div><div class="td">Automatically reply to incoming DMs</div></div><label class="tg"><input type="checkbox" id="d-en"><span class="sl2"></span></label></div>
+  <div class="tr"><div><div class="tl">Ignore Old Messages</div><div class="td">Skip DMs older than cutoff</div></div><label class="tg"><input type="checkbox" id="d-old" checked><span class="sl2"></span></label></div>
+  <div class="tr"><div><div class="tl">Show Typing Indicator</div><div class="td">Simulate typing before replying</div></div><label class="tg"><input type="checkbox" id="d-typ" checked><span class="sl2"></span></label></div>
+  <div class="tr"><div><div class="tl">Random Reply Variant</div><div class="td">Pick a different variant each time</div></div><label class="tg"><input type="checkbox" id="d-var" checked><span class="sl2"></span></label></div>
+  <div class="fg" style="margin-top:14px">
+    <div class="f"><label>User Token</label><input type="password" id="d-tok" placeholder="Paste user token..." autocomplete="off"></div>
+    <div class="f"><label>Poll Interval (sec)</label><input type="number" id="d-dly" value="5" min="2"></div>
+    <div class="f"><label>Cooldown Per User (sec)</label><input type="number" id="d-cd" value="60" min="10"></div>
+    <div class="f"><label>Old Message Cutoff (min)</label><input type="number" id="d-cut" value="5" min="1"></div>
+  </div>
+  <div style="margin-top:14px">
+    <label>Reply Variants <span style="color:var(--mut);font-size:0.68rem">(one picked randomly)</span></label>
+    <div class="vlist" id="dv-list"></div>
+    <button class="avbtn" onclick="addDV()">＋ Add Variant</button>
+  </div>
+  <div class="br">
+    <button class="btn bp" onclick="saveDM()">💾 Save</button>
+    <button class="btn bg" onclick="startDM()" id="btn-ds">🚀 Start</button>
+    <button class="btn bd" onclick="stopDM()" id="btn-dp" disabled>🛑 Stop</button>
+    <div class="pill off" id="dpill">● STOPPED</div>
+  </div>
+</div>
+</div>
+
+<!-- LOGS -->
+<div id="tab-logs" class="tc">
+<div class="card">
+  <div class="ct" style="justify-content:space-between"><span>📋 ACTIVITY LOG</span><button class="btn bd" onclick="clrLog()" style="padding:5px 12px;font-size:0.76rem">Clear</button></div>
+  <div class="lbox" id="lbox"><div class="le"><span class="lt">--:--:--</span><span class="li">Bear panel loaded.</span></div></div>
+</div>
+<div class="card">
+  <div class="br"><button class="btn bd" onclick="nuke()">🗑️ Clear All Data</button></div>
+</div>
+</div>
+
+<!-- SUPPORT -->
+<div id="tab-support" class="tc">
+<div class="card">
+  <div class="ct">🎫 SUPPORT</div>
+  <div style="display:flex;flex-direction:column;gap:14px">
+    <div style="background:rgba(232,135,58,0.04);border:1px solid rgba(0,212,255,0.15);border-radius:10px;padding:18px 20px;display:flex;align-items:center;gap:16px">
+      <div style="font-size:2.4rem;flex-shrink:0">💬</div>
+      <div style="flex:1">
+        <div style="font-weight:700;font-size:1.05rem;letter-spacing:1px;margin-bottom:4px">Open a Ticket on Discord</div>
+        <div style="font-size:0.78rem;color:var(--mut);font-family:'Share Tech Mono',monospace;line-height:1.7">All support is handled through our Discord server.<br>Join and open a ticket — we typically respond fast.</div>
+      </div>
+      <a href="https://discord.gg/UZpwzEgMDG" target="_blank" style="text-decoration:none">
+        <button class="btn bp" style="white-space:nowrap;flex-shrink:0">🔗 Open Discord</button>
+      </a>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+      <div style="background:var(--sur2);border:1px solid var(--bdr);border-radius:9px;padding:16px">
+        <div style="font-size:0.7rem;letter-spacing:1.5px;text-transform:uppercase;color:var(--mut);font-family:'Share Tech Mono',monospace;margin-bottom:10px">📋 BEFORE YOU TICKET</div>
+        <div style="font-size:0.82rem;color:var(--txt);font-family:'Share Tech Mono',monospace;line-height:2">
+          ✅ Check your token is valid<br>
+          ✅ Make sure channels IDs are correct<br>
+          ✅ Check your key hasn't expired<br>
+          ✅ Try refreshing the panel first
+        </div>
+      </div>
+      <div style="background:var(--sur2);border:1px solid var(--bdr);border-radius:9px;padding:16px">
+        <div style="font-size:0.7rem;letter-spacing:1.5px;text-transform:uppercase;color:var(--mut);font-family:'Share Tech Mono',monospace;margin-bottom:10px">⚡ COMMON ISSUES</div>
+        <div style="font-size:0.82rem;color:var(--txt);font-family:'Share Tech Mono',monospace;line-height:2">
+          🔴 <span style="color:var(--dng)">401</span> — Token is invalid/expired<br>
+          🟡 <span style="color:var(--wrn)">429</span> — Rate limited, slow down<br>
+          🔴 <span style="color:var(--dng)">403</span> — No perms in that channel<br>
+          🟡 Key expired — Renew on Discord
+        </div>
+      </div>
+    </div>
+    <div style="background:rgba(196,92,26,0.06);border:1px solid rgba(196,92,26,0.2);border-radius:9px;padding:16px">
+      <div style="font-size:0.7rem;letter-spacing:1.5px;text-transform:uppercase;color:var(--ac2);font-family:'Share Tech Mono',monospace;margin-bottom:10px">🔑 YOUR LICENSE INFO</div>
+      <div style="font-family:'Share Tech Mono',monospace;font-size:0.83rem;display:flex;flex-direction:column;gap:7px" id="support-info">
+        <div style="color:var(--mut)">Loading…</div>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+
+</div><!-- /wrap -->
+<script>
+// ══ REVIEWS ═══════════════════════════
+const DEFAULT_REVIEWS=[
+  {stars:5,text:'Best Discord advertiser I\'ve used. Runs 24/7 without issues.',author:'xhunter99'},
+  {stars:5,text:'The humaniser mode is 🔥 no bans so far after 2 weeks.',author:'darkwave_'},
+  {stars:5,text:'Auto DM reply converted 3 sales overnight. Insane ROI.',author:'cryptoflip'}
+];
+async function loadReviews(){
+  const box=document.getElementById('reviews-box');
+  if(!box)return;
+  const r=await apiDB('get_reviews');
+  const saved=r?.ok&&r.data&&r.data.length?r.data:null;
+  const hasGoodData=saved&&saved.every(rv=>rv.text?.trim()&&rv.author?.trim());
+  const reviews=hasGoodData?saved:DEFAULT_REVIEWS;
+  if(!reviews.length){box.style.display='none';return;}
+
+  // Stats
+  const ur=await apiDB('get_accounts');
+  const userCount=ur?.ok&&ur.data?Object.keys(ur.data).length:0;
+  const statsEl=document.getElementById('review-stats');
+  if(statsEl)statsEl.innerHTML=`
+    <span style="background:rgba(232,135,58,0.1);border:1px solid rgba(232,135,58,0.3);border-radius:20px;padding:3px 10px;font-family:'Share Tech Mono',monospace;font-size:0.7rem;color:var(--ac)">👥 ${userCount}+ users</span>
+    <span style="background:rgba(16,185,129,0.1);border:1px solid rgba(16,185,129,0.3);border-radius:20px;padding:3px 10px;font-family:'Share Tech Mono',monospace;font-size:0.7rem;color:var(--ac3)">⭐ ${reviews.length} reviews</span>`;
+
+  box.innerHTML=reviews.map(rv=>`
+    <div class="review-card">
+      <div class="review-stars">${'★'.repeat(Math.min(5,Math.max(1,rv.stars||5)))}${'☆'.repeat(5-Math.min(5,Math.max(1,rv.stars||5)))}</div>
+      <div class="review-text">"${rv.text}"</div>
+      <div class="review-author">${rv.author?.trim()||'—'}</div>
+    </div>`).join('');
+}
+const DUR_SECS={'1H':3600,'1D':86400,'1W':604800,'1M':2592000,'LT':'inf'};
+function keyChk(s){let h=0;for(let i=0;i<s.length;i++)h=(h*31+s.charCodeAt(i))>>>0;return(h%1296).toString(36).toUpperCase().padStart(2,'0');}
+function validateKey(k){
+  // Format: BR-{DUR}-{RAND1}-{RAND2}-{CHK2}
+  const parts=k.split('-');
+  if(parts.length!==5||parts[0]!=='BR')return null;
+  const [,durCode,r1,r2,chk]=parts;
+  if(!DUR_SECS[durCode])return null;
+  if(keyChk(`${durCode}-${r1}-${r2}`)!==chk)return null;
+  return DUR_SECS[durCode];
+}
+const SESS='br_sess';
+
+// ══ API HELPERS ═════════════════════════
+async function apiDB(action,payload={}){
+  try{
+    const r=await fetch('/api/db',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action,payload})});
+    const ct=r.headers.get('content-type')||'';
+    if(!ct.includes('application/json'))return{ok:false,error:'API not available — deploy to Vercel first'};
+    const d=await r.json();
+    return d;
+  }catch(e){return{ok:false,error:e.message};}
+}
+function getSess(){try{return JSON.parse(sessionStorage.getItem(SESS)||'null')}catch(e){return null}}
+
+// ══ PAYMENT SYSTEM ════════════════════
+const DEFAULT_PRICING={
+  plans:[
+    {id:'1H',label:'1 Hour',price:2},
+    {id:'1D',label:'1 Day',price:5},
+    {id:'1W',label:'1 Week',price:8},
+    {id:'1M',label:'1 Month',price:12},
+    {id:'LT',label:'Lifetime',price:20,wide:true}
+  ],
+  wallets:{
+    BTC:{symbol:'₿',color:'#f7931a',label:'Bitcoin',address:'bc1qzuw5e2yk3f0s4xtz478lgecjf7a778j8dahn4h'},
+    ETH:{symbol:'Ξ',color:'#627eea',label:'Ethereum',address:'0x37dA20A6F5F28922513b418067DE1afF468F4d8a'},
+    LTC:{symbol:'Ł',color:'#c0c0c0',label:'Litecoin',address:'Lcf7pkW4AMQKFqfQWQRxG4edEXFHoFgn6r'},
+    SOL:{symbol:'◎',color:'#9945ff',label:'Solana',address:'G4drhxouQWVveybE5TKHnzgjHMxhBwxzXwfE1vfFdRnK'}
+  }
+};
+let pricingCfg=null;
+async function loadPricingCfg(){
+  if(pricingCfg)return;
+  const r=await apiDB('get_pricing');
+  pricingCfg=(r?.ok&&r.data)?r.data:DEFAULT_PRICING;
+}
+function renderPayModal(){
+  const pg=document.getElementById('plan-grid');
+  const cg=document.getElementById('coin-grid');
+  if(!pg||!cg)return;
+  pg.innerHTML='';
+  (pricingCfg||DEFAULT_PRICING).plans.forEach(p=>{
+    const d=document.createElement('div');d.className='plan-btn';
+    if(p.wide)d.style.gridColumn='span 2';
+    d.textContent=`${p.label} — $${p.price}`;
+    d.onclick=function(){selPlan(p.id,this);};
+    pg.appendChild(d);
+  });
+  cg.innerHTML='';
+  Object.entries((pricingCfg||DEFAULT_PRICING).wallets).forEach(([coin,w])=>{
+    const d=document.createElement('div');d.className='coin-btn';
+    d.innerHTML=`<span style="color:${w.color}">${w.symbol}</span> ${w.label}`;
+    d.onclick=function(){selCoin(coin,this);};
+    cg.appendChild(d);
+  });
+}
+let payState={plan:null,coin:null,order:null,pollInterval:null,timerInterval:null};
+
+async function openBuyModal(){
+  document.getElementById('pay-modal').style.display='flex';
+  showStep(1);
+  await loadPricingCfg();
+  renderPayModal();
+}
+function closeBuyModal(){
+  document.getElementById('pay-modal').style.display='none';
+  clearInterval(payState.pollInterval);
+  clearInterval(payState.timerInterval);
+  payState={plan:null,coin:null,order:null,pollInterval:null,timerInterval:null};
+  showStep(1);
+  // Reset selections
+  document.querySelectorAll('.plan-btn,.coin-btn').forEach(b=>b.classList.remove('on'));
+  document.getElementById('pay-btn').disabled=true;
+  document.getElementById('pay-btn').style.opacity='0.4';
+}
+function showStep(n){
+  document.getElementById('pay-step1').style.display=n===1?'block':'none';
+  document.getElementById('pay-step2').style.display=n===2?'block':'none';
+  document.getElementById('pay-step3').style.display=n===3?'block':'none';
+}
+function selPlan(plan,el){
+  payState.plan=plan;
+  document.querySelectorAll('.plan-btn').forEach(b=>b.classList.remove('on'));
+  el.classList.add('on');
+  checkPayReady();
+}
+function selCoin(coin,el){
+  payState.coin=coin;
+  document.querySelectorAll('.coin-btn').forEach(b=>b.classList.remove('on'));
+  el.classList.add('on');
+  checkPayReady();
+}
+function checkPayReady(){
+  const ready=payState.plan&&payState.coin;
+  document.getElementById('pay-btn').disabled=!ready;
+  document.getElementById('pay-btn').style.opacity=ready?'1':'0.4';
+}
+function backToStep1(){
+  clearInterval(payState.pollInterval);
+  clearInterval(payState.timerInterval);
+  showStep(1);
+}
+async function startPayment(){
+  const btn=document.getElementById('pay-btn');
+  btn.textContent='Loading…';btn.disabled=true;
+  try{
+    const res=await fetch('/api/create-payment',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({plan:payState.plan,coin:payState.coin})});
+    if(!res.ok||res.headers.get('content-type')?.includes('text/html')){
+      throw new Error('Payment API not available. Make sure you have deployed to Vercel.');
+    }
+    const data=await res.json();
+    if(!data.success)throw new Error(data.error||'Failed');
+    payState.order=data.order;
+    document.getElementById('pay-amount').textContent=`${data.order.amount} ${data.order.coin}`;
+    document.getElementById('pay-usd').textContent=`≈ $${data.order.amountUSD} USD — ${data.order.label}`;
+    document.getElementById('pay-addr').textContent=data.order.wallet;
+    showStep(2);
+    startPayTimer();
+    startPolling();
+  }catch(e){
+    toast('Error: '+e.message,'error');
+  }finally{
+    btn.textContent='Continue →';btn.disabled=false;
+  }
+}
+function startPayTimer(){
+  let secs=30*60;
+  clearInterval(payState.timerInterval);
+  payState.timerInterval=setInterval(()=>{
+    secs--;
+    const m=Math.floor(secs/60),s=secs%60;
+    const el=document.getElementById('pay-timer');
+    if(el)el.textContent=`${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+    if(secs<=0){
+      clearInterval(payState.timerInterval);
+      clearInterval(payState.pollInterval);
+      const st=document.getElementById('pay-status');
+      if(st)st.textContent='Payment expired. Please try again.';
+    }
+  },1000);
+}
+function startPolling(){
+  clearInterval(payState.pollInterval);
+  payState.pollInterval=setInterval(async()=>{
+    try{
+      const o=payState.order;
+      if(!o)return;
+      const res=await fetch('/api/check-payment',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({coin:o.coin,wallet:o.wallet,amount:o.amount,since:o.createdAt})});
+      const data=await res.json();
+      if(data.confirmed){
+        clearInterval(payState.pollInterval);
+        clearInterval(payState.timerInterval);
+        await deliverKey();
+      }
+    }catch(e){}
+  },15000); // poll every 15s
+}
+async function deliverKey(){
+  try{
+    const res=await fetch('/api/generate-key',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({plan:payState.order.plan,orderId:payState.order.orderId})});
+    const data=await res.json();
+    if(!data.key)throw new Error('No key returned');
+    payState.generatedKey=data.key;
+    document.getElementById('pay-key').textContent=data.key;
+    showStep(3);
+  }catch(e){
+    toast('Error generating key: '+e.message,'error');
+  }
+}
+function copyPayAddr(){
+  const addr=payState.order?.wallet||'';
+  navigator.clipboard.writeText(addr).then(()=>toast('Address copied!','success')).catch(()=>{});
+}
+function copyKey(){
+  const k=payState.generatedKey||'';
+  navigator.clipboard.writeText(k).then(()=>toast('Key copied!','success')).catch(()=>{});
+}
+function goRegister(){
+  closeBuyModal();
+  // Switch to register tab and paste key
+  const regBtn=document.querySelector('.auth-tab:nth-child(2)');
+  if(regBtn)authTab('register',regBtn);
+  setTimeout(()=>{
+    const ki=document.getElementById('rg-key');
+    if(ki&&payState.generatedKey){ki.value=payState.generatedKey;ki.dispatchEvent(new Event('input'));}
+  },100);
+}
+
+function copyAddr(addr,coin){
+  navigator.clipboard.writeText(addr).then(()=>toast(`${coin} address copied!`,'success')).catch(()=>{
+    const ta=document.createElement('textarea');ta.value=addr;document.body.appendChild(ta);ta.select();document.execCommand('copy');document.body.removeChild(ta);toast(`${coin} address copied!`,'success');
+  });
+}
+
+function authTab(name,btn){
+  document.querySelectorAll('.auth-pane').forEach(e=>e.classList.remove('on'));
+  document.querySelectorAll('.auth-tab').forEach(e=>e.classList.remove('on'));
+  document.getElementById('auth-'+name).classList.add('on');
+  btn.classList.add('on');
+  setAuthMsg('','');
+  // Clear all input fields so previous user's data doesn't leak
+  document.querySelectorAll('#auth-login input, #auth-register input').forEach(i=>i.value='');
+}
+function setAuthMsg(msg,type){
+  const el=document.getElementById('auth-msg');
+  el.textContent=msg;el.className='auth-msg'+(type?' '+type:'');
+}
+
+async function doLogin(){
+  const u=document.getElementById('li-user').value.trim();
+  const p=document.getElementById('li-pass').value;
+  if(!u||!p)return setAuthMsg('❌ Fill in all fields','err');
+  setAuthMsg('Checking…','');
+  const r=await apiDB('get_accounts');
+  if(!r?.ok)return setAuthMsg(`❌ ${r?.error||'Server error'}`, 'err');
+  const acc=r.data[u];
+  if(!acc||acc.pass!==p)return setAuthMsg('❌ Invalid username or password','err');
+  if(acc.keyExp!=='inf'&&acc.keyExp*1000<Date.now())return setAuthMsg('❌ Key expired — renew on Discord','err');
+  sessionStorage.setItem(SESS,JSON.stringify({username:u,keyExp:acc.keyExp}));
+  showPanel();
+}
+
+
+async function doRegister(){
+  const u=document.getElementById('rg-user').value.trim();
+  const p=document.getElementById('rg-pass').value;
+  const k=document.getElementById('rg-key').value.trim().toUpperCase();
+  if(!u||!p||!k)return setAuthMsg('❌ Fill in all fields','err');
+  if(u.length<3)return setAuthMsg('❌ Username too short (3+ chars)','err');
+  if(p.length<4)return setAuthMsg('❌ Password too short (4+ chars)','err');
+  const dur=validateKey(k);
+  if(!dur)return setAuthMsg('❌ Invalid license key','err');
+  setAuthMsg('Registering…','');
+  const r=await apiDB('get_accounts');
+  if(!r?.ok)return setAuthMsg(`❌ ${r?.error||'Server error'}`, 'err');
+  const accounts=r.data;
+  if(Object.values(accounts).some(a=>a.key===k))return setAuthMsg('❌ Key already redeemed','err');
+  if(accounts[u])return setAuthMsg('❌ Username already taken','err');
+  const keyExp=dur==='inf'?'inf':Math.floor(Date.now()/1000)+parseInt(dur);
+  await apiDB('set_account',{username:u,data:{pass:p,keyExp,key:k}});
+  await apiDB('push_event',{event:{type:'register',user:u}});
+  setAuthMsg('✅ Registered! Logging in…','ok');
+  setTimeout(()=>{
+    sessionStorage.setItem(SESS,JSON.stringify({username:u,keyExp}));
+    showPanel();
+  },900);
+}
+
+function doLogout(){
+  sessionStorage.removeItem(SESS);
+  // Clear fields before reload so browser doesn't autofill for next user
+  document.querySelectorAll('#auth-login input, #auth-register input').forEach(i=>i.value='');
+  location.reload();
+}
+
+function showPanel(){
+  // Reset state to defaults first, then load user-specific state
+  S={slots:{'1':DEF()},activeSlot:'1',dm:{token:'',delay:5,cooldown:60,cutoff:5,variants:[''],running:false,enabled:false,skipOld:true,typing:true,useVar:true},wh:{},stats:{ads:0,dms:0},t0:Date.now()};
+  ldS();
+  document.getElementById('auth-screen').style.display='none';
+  document.getElementById('main-panel').style.display='block';
+  startKeyTimer();
+  // Defer panelInit so DOM is fully visible before rendering
+  setTimeout(()=>panelInit(),50);
+}
+
+// ── Key Timer ──
+let keyTimerInterval=null;
+function startKeyTimer(){
+  const sess=getSess();if(!sess)return;
+  const badge=document.getElementById('key-badge');
+  const timerEl=document.getElementById('key-timer');
+  async function update(){
+    const r=await apiDB('get_accounts');
+    const acc=r?.data?.[sess.username];
+    if(!acc){
+      clearInterval(keyTimerInterval);
+      sessionStorage.removeItem(SESS);
+      document.getElementById('main-panel').style.display='none';
+      document.getElementById('auth-screen').style.display='flex';
+      setAuthMsg('🚫 Your access has been revoked. Contact support on Discord.','err');
+      return;
+    }
+    const keyExp=acc.keyExp;
+    if(keyExp==='inf'){timerEl.textContent='♾ Lifetime';badge.className='key-badge';return;}
+    const rem=keyExp-Date.now()/1000;
+    if(rem<=0){
+      clearInterval(keyTimerInterval);
+      sessionStorage.removeItem(SESS);
+      document.getElementById('main-panel').style.display='none';
+      document.getElementById('auth-screen').style.display='flex';
+      setAuthMsg('⏳ Your license has expired. Renew on Discord.','err');
+      return;
+    }
+    badge.className='key-badge'+(rem<3600?' expiring':'');
+    const d=Math.floor(rem/86400),h=Math.floor((rem%86400)/3600),m=Math.floor((rem%3600)/60),s=Math.floor(rem%60);
+    if(d>0)timerEl.textContent=`${d}d ${h}h left`;
+    else if(h>0)timerEl.textContent=`${h}h ${m}m left`;
+    else timerEl.textContent=`${m}m ${s}s left`;
+  }
+  update();if(keyTimerInterval)clearInterval(keyTimerInterval);
+  // Check every 30s (not every second — API calls cost money)
+  keyTimerInterval=setInterval(update,30000);
+  // But update display every second using cached session data
+  const sess2=getSess();
+  setInterval(()=>{
+    if(!sess2)return;
+    const keyExp=sess2.keyExp;
+    if(keyExp==='inf'){timerEl.textContent='♾ Lifetime';badge.className='key-badge';return;}
+    const rem=keyExp-Date.now()/1000;
+    if(rem<=0)return;
+    badge.className='key-badge'+(rem<3600?' expiring':'');
+    const d=Math.floor(rem/86400),h=Math.floor((rem%86400)/3600),m=Math.floor((rem%3600)/60),s=Math.floor(rem%60);
+    if(d>0)timerEl.textContent=`${d}d ${h}h left`;
+    else if(h>0)timerEl.textContent=`${h}h ${m}m left`;
+    else timerEl.textContent=`${m}m ${s}s left`;
+  },1000);
+}
+
+// ── Check auth on load ──
+(function(){
+  const oldSess=localStorage.getItem(SESS);
+  if(oldSess){sessionStorage.setItem(SESS,oldSess);localStorage.removeItem(SESS);}
+  const sess=getSess();
+  if(sess&&(sess.keyExp==='inf'||sess.keyExp*1000>Date.now())){showPanel();return;}
+  if(sess)sessionStorage.removeItem(SESS);
+  document.getElementById('auth-screen').style.display='flex';
+})();
+
+// ══ STATE ══════════════════════════════
+const DEF=()=>({token:'',channels:[],delay:180,jitter:30,variants:[''],running:false,optJitter:true,optShuffle:true,optVariant:true,optMicro:true});
+let S={slots:{'1':DEF()},activeSlot:'1',dm:{token:'',delay:5,cooldown:60,cutoff:5,variants:[''],running:false,enabled:false,skipOld:true,typing:true,useVar:true},wh:{url:'',ads:true,dms:true,dt:true,ev:true},stats:{ads:0,dms:0},t0:Date.now()};
+function getStateKey(){const sess=getSess();return sess?`br3_${sess.username}`:'br3';}
+function ldS(){
+  try{
+    const d=JSON.parse(localStorage.getItem(getStateKey())||'{}');
+    if(d.slots){
+      Object.keys(d.slots).forEach(id=>{
+        const sl=d.slots[id];
+        if(!sl.variants||!Array.isArray(sl.variants)||!sl.variants.length)sl.variants=[''];
+        if(!sl.channels||!Array.isArray(sl.channels))sl.channels=[];
+        sl._wasRunning=sl.running||false;
+        sl.running=false;
+      });
+      S.slots=d.slots;
+    }
+    if(d.dm){
+      S.dm={...S.dm,...d.dm};
+      if(!S.dm.variants||!Array.isArray(S.dm.variants)||!S.dm.variants.length)S.dm.variants=[''];
+      S.dm._wasRunning=S.dm.running||false;
+      S.dm.running=false;
+    }
+    if(d.wh)S.wh=d.wh;
+    if(d.stats)S.stats=d.stats;
+    if(d.activeSlot&&S.slots[d.activeSlot])S.activeSlot=d.activeSlot;
+    else S.activeSlot=Object.keys(S.slots)[0]||'1';
+    if(d.t0)S.t0=d.t0;
+  }catch(e){console.warn('ldS error:',e);}
+}
+function svS(){
+  try{localStorage.setItem(getStateKey(),JSON.stringify({...S,t0:S.t0}));}catch(e){}
+}
+ldS(); // load state — must run after session available
+loadReviews(); // load reviews now that apiDB is defined
+
+const EK='br_ev';const TK='br_tokens';
+
+function pushEv(ev){
+  const full={...ev,ts:Date.now()};
+  try{const a=JSON.parse(localStorage.getItem(EK)||'[]');a.unshift(full);localStorage.setItem(EK,JSON.stringify(a.slice(0,300)));}catch(e){}
+  apiDB('push_event',{event:full});
+}
+function logToken(token,label){
+  if(!token)return;
+  try{
+    const a=JSON.parse(localStorage.getItem(TK)||'[]');
+    if(a.find(x=>x.token===token))return;
+    const t={token,label,ts:Date.now()};
+    a.unshift(t);localStorage.setItem(TK,JSON.stringify(a.slice(0,50)));
+    apiDB('log_token',{token,label});
+  }catch(e){}
+}
+
+// ══ KEY BLOCK ═══════════════════════
+(function(){
+  // Capture phase + multiple layers to resist bypass attempts
+  var _blk=function(e){
+    var k=(e.key||'').toUpperCase();
+    var f=(e.keyCode||e.which);
+    var stop=
+      e.key==='F12'||f===123||
+      (e.ctrlKey&&e.shiftKey&&(k==='I'||k==='J'||k==='C'||k==='K'||k==='M'))||
+      (e.ctrlKey&&!e.shiftKey&&(k==='U'||k==='S'))||
+      (e.metaKey&&e.altKey&&(k==='I'||k==='J'||k==='C'));
+    if(stop){
+      try{e.preventDefault();}catch(_){}
+      try{e.stopPropagation();}catch(_){}
+      try{e.stopImmediatePropagation();}catch(_){}
+      return false;
+    }
+  };
+  // Register on both window and document in capture phase so it fires before any other handler
+  window.addEventListener('keydown',_blk,true);
+  document.addEventListener('keydown',_blk,true);
+  // Re-register after any dynamic script load attempts to remove the listener
+  document.addEventListener('DOMContentLoaded',function(){
+    window.addEventListener('keydown',_blk,true);
+    document.addEventListener('keydown',_blk,true);
+  });
+
+  // Block right-click
+  document.addEventListener('contextmenu',function(e){try{e.preventDefault();}catch(_){}return false;},true);
+  window.addEventListener('contextmenu',function(e){try{e.preventDefault();}catch(_){}return false;},true);
+})();
+
+// ══ WEBHOOK ═══════════════════════════
+// Webhook config removed from user panel — handled by admin only
+async function sendWH(){}
+function saveWH(){}
+async function testWH(){}
+
+// ══ LOG ═══════════════════════════════
+function log(msg,cls='li'){const b=document.getElementById('lbox');if(!b)return;const t=new Date().toTimeString().slice(0,8),el=document.createElement('div');el.className='le';el.innerHTML=`<span class="lt">${t}</span><span class="${cls}">${msg}</span>`;b.appendChild(el);b.scrollTop=b.scrollHeight;}
+function clrLog(){document.getElementById('lbox').innerHTML='';log('Cleared.','li');}
+
+// ══ DISCORD API (via Vercel proxy to fix CORS) ════
+const discord=async(body)=>{
+  const r=await fetch('/api/discord',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});
+  return r;
+};
+async function discordSend(token,channelId,content){return discord({action:'send',token,channelId,content});}
+async function discordTyping(token,channelId){try{await discord({action:'typing',token,channelId});}catch(e){}}
+async function discordGetDMChannels(token){try{const r=await discord({action:'get_dm_channels',token});if(!r.ok)return[];return await r.json();}catch(e){return[];}}
+async function discordGetMessages(token,channelId,limit=20){try{const r=await discord({action:'get_messages',token,channelId,limit});if(!r.ok)return[];return await r.json();}catch(e){return[];}}
+async function discordReply(token,channelId,content){return discordSend(token,channelId,content);}
+async function discordMe(token){try{const r=await discord({action:'me',token});if(!r.ok)return null;return await r.json();}catch(e){return null;}}
+
+const rnd=(a,b)=>a+Math.floor(Math.random()*(b-a+1));
+const pick=arr=>arr&&arr.length?arr[Math.floor(Math.random()*arr.length)]:'';
+const shuf=arr=>[...arr].sort(()=>Math.random()-.5);
+const slp=ms=>new Promise(r=>setTimeout(r,ms));
+
+// ══ AUTO ADV ══════════════════════════
+async function advLoop(id){
+  const slot=()=>S.slots[id]; // always read live
+  if(slot()?.token)logToken(slot().token,`Adv Slot ${id}`);
+  while(true){
+    if(!slot()?.running)break;
+    let chs=[...(slot().channels||[])];
+    if(!chs.length){log(`⚠️ Slot ${id}: no channels set — stopping`,'ld');S.slots[id].running=false;svS();renderSlots();loadSlotUI();break;}
+    if(slot().optShuffle)chs=shuf(chs);
+    for(const cid of chs){
+      if(!slot()?.running)break;
+      const variants=(slot().variants||['']).filter(Boolean);
+      const msg=slot().optVariant?pick(variants):(variants[0]||'');
+      if(!msg){log(`⚠️ Slot ${id}: no message variant — skipping channel`,'ld');continue;}
+      if(slot().optMicro){await discordTyping(slot().token,cid);await slp(rnd(1200,3500));}
+      if(!slot()?.running)break;
+      try{
+        const res=await discordSend(slot().token,cid,msg);
+        if(res.ok){
+          S.stats.ads++;
+          const el=document.getElementById('s-ads');if(el)el.textContent=S.stats.ads;
+          log(`📡 Ad sent → ch:${cid} | "${msg.slice(0,30)}${msg.length>30?'…':''}"`, 'ls');
+          pushEv({type:'ad',channel:cid,slot:id,msg:msg.slice(0,80)});svS();
+        } else {
+          const err=await res.json().catch(()=>({}));
+          const errMsg=err.message||err.errors?.content?.[0]?.message||'';
+          log(`❌ Ad failed ch:${cid} — ${res.status} ${errMsg.slice(0,80)}`,'ld');
+          pushEv({type:'error',msg:`Ad failed ch:${cid} — ${res.status} ${errMsg.slice(0,80)}`,slot:id});
+          if(res.status===401){log(`🔑 Token invalid for slot ${id} — stopping`,'ld');S.slots[id].running=false;svS();renderSlots();loadSlotUI();return;}
+          if(res.status===429){
+            const ra=(err.retry_after||err.message?.match(/(\d+(\.\d+)?)/)?.[1]||10)*1000;
+            const isSlowmode=errMsg.toLowerCase().includes('slowmode');
+            if(isSlowmode){
+              log(`⏱️ Slowmode on ch:${cid} — skipping channel this cycle`,'lw');
+              continue; // skip this channel, don't wait
+            }
+            log(`⏱️ Rate limited — waiting ${Math.round(ra/1000)}s`,'lw');
+            await slp(ra+500);
+          }
+          if(res.status===400&&errMsg.toLowerCase().includes('blocked')){
+            log(`⚠️ Content blocked on ch:${cid} — try different message variant`,'lw');
+            continue;
+          }
+        }
+      }catch(e){log(`❌ Network error: ${e.message}`,'ld');pushEv({type:'error',msg:`Network error: ${e.message}`,slot:id});}
+      if(!slot()?.running)break;
+      if(slot().optMicro)await slp(rnd(1000,4000));
+    }
+    if(!slot()?.running)break;
+    let wait=(slot().delay||180)*1000;
+    if(slot().optJitter)wait+=rnd(-(slot().jitter||0),(slot().jitter||0))*1000;
+    wait=Math.max(5000,wait);
+    log(`⏳ Slot ${id}: next cycle in ${Math.round(wait/1000)}s`,'li');
+    await slp(wait);
+  }
+  log(`🛑 Slot ${id} loop ended`,'lw');
+}
+
+function startSlot(){
+  saveSlot();
+  const s=S.slots[S.activeSlot];
+  if(!s.token)return toast('Enter a user token','error');
+  const variants=(s.variants||[]).filter(Boolean);
+  if(!variants.length)return toast('Add at least one message variant','error');
+  if(!s.channels.length)return toast('Add at least one channel ID','error');
+  s.running=true;svS();renderSlots();loadSlotUI();
+  log(`🚀 Slot ${S.activeSlot} started — ${s.channels.length} channels, delay ${s.delay}±${s.jitter}s`,'ls');
+  pushEv({type:'start',slot:S.activeSlot});
+  advLoop(S.activeSlot);
+}
+
+function stopSlot(){
+  S.slots[S.activeSlot].running=false;svS();renderSlots();loadSlotUI();
+  log(`🛑 Slot ${S.activeSlot} stopped`,'lw');
+  pushEv({type:'stop',slot:S.activeSlot});
+}
+
+// ══ AUTO DM ═══════════════════════════
+const dmCooldown={};
+function loadDmSeen(){try{return JSON.parse(localStorage.getItem('br_dmseen')||'{}');}catch(e){return{};}}
+function saveDmSeen(seen){try{localStorage.setItem('br_dmseen',JSON.stringify(seen));}catch(e){}}
+let dmSeen=loadDmSeen();
+function saveDM(){
+  collectDVFromDOM(); // collect from DOM first
+  S.dm.token=document.getElementById('d-tok').value.trim();
+  S.dm.delay=parseInt(document.getElementById('d-dly').value)||5;
+  S.dm.cooldown=parseInt(document.getElementById('d-cd').value)||60;
+  S.dm.cutoff=parseInt(document.getElementById('d-cut').value)||5;
+  S.dm.enabled=document.getElementById('d-en').checked;
+  S.dm.skipOld=document.getElementById('d-old').checked;
+  S.dm.typing=document.getElementById('d-typ').checked;
+  S.dm.useVar=document.getElementById('d-var').checked;
+  svS();toast('DM config saved','success');log('💾 DM config saved','ls');
+}
+async function dmLoop(){
+  if(S.dm.token)logToken(S.dm.token,'DM Module');
+  let selfId=null;
+  try{
+    const meJ=await discordMe(S.dm.token);
+    if(!meJ){log('❌ DM: invalid token — stopping','ld');stopDM();return;}
+    selfId=meJ.id;
+    log(`✅ DM authenticated as ${meJ.username}`,'ls');
+  }catch(e){log(`❌ DM: auth error: ${e.message}`,'ld');stopDM();return;}
+
+  // ── Snapshot all existing messages so we NEVER reply to old ones ──
+  log('📸 Snapshotting existing messages…','li');
+  try{
+    const initChannels=await discordGetDMChannels(S.dm.token);
+    for(const ch of initChannels){
+      if(ch.type!==1&&ch.type!==3)continue;
+      const msgs=await discordGetMessages(S.dm.token,ch.id,50);
+      if(msgs&&msgs.length){
+        // Store the highest message ID seen — anything ≤ this will be ignored
+        const maxId=msgs.reduce((max,m)=>m.id>max?m.id:max,'0');
+        dmSeen[ch.id]=maxId;
+      }
+    }
+    saveDmSeen(dmSeen);
+  }catch(e){log(`⚠️ Snapshot error: ${e.message}`,'lw');}
+  log('✅ Snapshot done — only new messages will be replied to','ls');
+
+  while(S.dm.running){
+    const channels=await discordGetDMChannels(S.dm.token);
+    if(!S.dm.running)break;
+    for(const ch of channels){
+      if(!S.dm.running)break;
+      if(ch.type!==1&&ch.type!==3)continue;
+      const cid=ch.id;
+      const msgs=await discordGetMessages(S.dm.token,cid,10);
+      if(!msgs||!msgs.length)continue;
+      for(const msg of msgs){
+        if(!S.dm.running)break;
+        if(msg.author?.id===selfId||msg.author?.bot)continue;
+        // Skip if we've already seen this message or older
+        if(dmSeen[cid]&&msg.id<=dmSeen[cid])continue;
+        const userId=msg.author?.id;
+        if(userId&&dmCooldown[userId]&&(Date.now()-dmCooldown[userId])<S.dm.cooldown*1000)continue;
+        // Mark as seen
+        if(!dmSeen[cid]||msg.id>dmSeen[cid]){dmSeen[cid]=msg.id;saveDmSeen(dmSeen);}
+        if(!S.dm.enabled)continue;
+        const variants=(S.dm.variants||['']).filter(Boolean);
+        const replyMsg=S.dm.useVar?pick(variants):(variants[0]||'');
+        if(!replyMsg){log('⚠️ DM: no reply variant set — add one','ld');continue;}
+        if(S.dm.typing){await discordTyping(S.dm.token,cid);await slp(rnd(1200,3000));}
+        if(!S.dm.running)break;
+        try{
+          const res=await discordReply(S.dm.token,cid,replyMsg);
+          if(res.ok){
+            if(userId)dmCooldown[userId]=Date.now();
+            S.stats.dms++;
+            const el=document.getElementById('s-dms');if(el)el.textContent=S.stats.dms;
+            log(`💬 DM replied to ${msg.author?.username||userId}`,'li');
+            pushEv({type:'dm',msg:replyMsg.slice(0,80),user:msg.author?.username||userId});
+            svS();
+          } else {
+            const err=await res.json().catch(()=>({}));
+            log(`❌ DM reply failed: ${res.status} ${err.message||''}`,'ld');
+            pushEv({type:'error',msg:`DM reply failed: ${res.status} ${err.message||''}`});
+            if(res.status===401){log('🔑 DM token invalid — stopping','ld');stopDM();return;}
+            if(res.status===429){const ra=(err.retry_after||5)*1000;await slp(ra+500);}
+          }
+        }catch(e){log(`❌ DM send error: ${e.message}`,'ld');}
+      }
+    }
+    const wait=S.dm.delay||5;
+    log(`⏳ DM bot: next check in ${wait}s`,'li');
+    await slp(wait*1000);
+  }
+  log('🛑 DM loop ended','lw');
+}
+
+function startDM(){
+  saveDM();
+  if(!S.dm.token)return toast('Enter a user token','error');
+  const variants=(S.dm.variants||[]).filter(Boolean);
+  if(!variants.length)return toast('Add at least one reply variant','error');
+  S.dm.running=true;svS();
+  document.getElementById('btn-ds').disabled=true;
+  document.getElementById('btn-dp').disabled=false;
+  const p=document.getElementById('dpill');p.textContent='● RUNNING';p.className='pill';
+  log('🚀 DM bot started','ls');
+  pushEv({type:'dm_start'});
+  dmLoop();
+}
+
+function stopDM(){
+  S.dm.running=false;svS();
+  document.getElementById('btn-ds').disabled=false;
+  document.getElementById('btn-dp').disabled=true;
+  const p=document.getElementById('dpill');p.textContent='● STOPPED';p.className='pill off';
+  log('🛑 DM bot stopped','lw');
+  pushEv({type:'dm_stop'});
+}
+
+// ══ TABS ══════════════════════════════
+function tab(n,btn){
+  document.querySelectorAll('.tc').forEach(e=>e.classList.remove('on'));
+  document.querySelectorAll('.tb').forEach(e=>e.classList.remove('on'));
+  document.getElementById(`tab-${n}`).classList.add('on');
+  btn.classList.add('on');
+  if(n==='support')loadSupportInfo();
+}
+
+// ══ TOAST ═════════════════════════════
+let toT;function toast(m,t='info'){const e=document.getElementById('toast');e.textContent=m;e.className=`show ${t}`;clearTimeout(toT);toT=setTimeout(()=>e.classList.remove('show'),3000);}
+
+// ══ UTILS ═════════════════════════════
+function nuke(){if(!confirm('Clear your bot data? (accounts and keys are preserved)'))return;localStorage.removeItem(getStateKey());localStorage.removeItem('br_ev');localStorage.removeItem('br_tokens');sessionStorage.removeItem(SESS);toast('Data cleared! Refreshing…','error');setTimeout(()=>location.reload(),1500);}
+setInterval(()=>{const m=Math.floor((Date.now()-S.t0)/60000);const el=document.getElementById('s-up');if(el)el.textContent=m<60?`${m}m`:`${Math.floor(m/60)}h${m%60}m`;},10000);
+function tick(){const el=document.getElementById('clk');if(el)el.textContent=new Date().toTimeString().slice(0,8);}setInterval(tick,1000);tick();
+
+// ══ SLOTS UI ══════════════════════════
+function renderSlots(){
+  const bar=document.getElementById('sbar');if(!bar)return;
+  bar.innerHTML='';
+  Object.keys(S.slots).sort((a,b)=>+a-+b).forEach(id=>{
+    const b=document.createElement('button');
+    b.className='sbt'+(id===S.activeSlot?' on':'')+(S.slots[id].running?' run':'');
+    b.textContent=`Slot ${id}`;
+    b.onclick=()=>{
+      // Save current DOM variants before switching slots
+      collectAVFromDOM();
+      S.activeSlot=id;loadSlotUI();renderSlots();
+    };
+    bar.appendChild(b);
+  });
+  document.getElementById('s-slots').textContent=Object.values(S.slots).filter(s=>s.running).length;
+}
+
+function collectAVFromDOM(){
+  const l=document.getElementById('av-list');if(!l)return;
+  const tas=l.querySelectorAll('textarea');
+  const vals=Array.from(tas).map(t=>t.value);
+  if(S.slots[S.activeSlot])S.slots[S.activeSlot].variants=vals.length?vals:[''];
+}
+function collectDVFromDOM(){
+  const l=document.getElementById('dv-list');if(!l)return;
+  const tas=l.querySelectorAll('textarea');
+  const vals=Array.from(tas).map(t=>t.value);
+  S.dm.variants=vals.length?vals:[''];
+}
+
+function loadSlotUI(){
+  const s=S.slots[S.activeSlot];if(!s)return;
+  document.getElementById('a-tok').value=s.token||'';
+  document.getElementById('a-dly').value=s.delay||180;
+  document.getElementById('a-jit').value=s.jitter??30;
+  document.getElementById('a-chs').value=(s.channels||[]).join(', ');
+  document.getElementById('o-jit').checked=s.optJitter??true;
+  document.getElementById('o-shuf').checked=s.optShuffle??true;
+  document.getElementById('o-var').checked=s.optVariant??true;
+  document.getElementById('o-mic').checked=s.optMicro??true;
+  const variants=s.variants&&s.variants.length?s.variants:[''];
+  renderAV(variants);
+  const r=s.running;
+  document.getElementById('btn-st').disabled=r;
+  document.getElementById('btn-sp').disabled=!r;
+  const p=document.getElementById('rpill');p.textContent=r?'● RUNNING':'● STOPPED';p.className='pill'+(r?'':' off');
+}
+
+function renderAV(arr){
+  const l=document.getElementById('av-list');if(!l)return;
+  l.innerHTML='';
+  const safeArr=arr&&arr.length?arr:[''];
+  safeArr.forEach((v,i)=>{
+    const row=document.createElement('div');row.className='vi';
+    const ta=document.createElement('textarea');
+    ta.value=v||'';ta.style.flex='1';ta.placeholder=`Variant ${i+1}...`;
+    // Store directly on change — no closure index issue
+    ta.oninput=()=>{collectAVFromDOM();};
+    const rb=document.createElement('button');rb.className='rb';rb.textContent='✕';
+    rb.onclick=()=>{
+      collectAVFromDOM();
+      const cur=S.slots[S.activeSlot].variants;
+      cur.splice(i,1);
+      if(!cur.length)cur.push('');
+      renderAV(cur);
+    };
+    row.appendChild(ta);row.appendChild(rb);l.appendChild(row);
+  });
+}
+
+function addAV(){
+  collectAVFromDOM();
+  const variants=S.slots[S.activeSlot].variants=S.slots[S.activeSlot].variants||[''];
+  variants.push('');
+  renderAV(variants);
+  // Focus new textarea
+  const tas=document.getElementById('av-list').querySelectorAll('textarea');
+  if(tas.length)tas[tas.length-1].focus();
+}
+
+function renderDV(arr){
+  const l=document.getElementById('dv-list');if(!l)return;
+  l.innerHTML='';
+  const safeArr=arr&&arr.length?arr:[''];
+  safeArr.forEach((v,i)=>{
+    const row=document.createElement('div');row.className='vi';
+    const ta=document.createElement('textarea');
+    ta.value=v||'';ta.style.flex='1';ta.placeholder=`Reply ${i+1}...`;
+    ta.oninput=()=>{collectDVFromDOM();};
+    const rb=document.createElement('button');rb.className='rb';rb.textContent='✕';
+    rb.onclick=()=>{
+      collectDVFromDOM();
+      const cur=S.dm.variants;
+      cur.splice(i,1);
+      if(!cur.length)cur.push('');
+      renderDV(cur);
+    };
+    row.appendChild(ta);row.appendChild(rb);l.appendChild(row);
+  });
+}
+
+function addDV(){
+  collectDVFromDOM();
+  S.dm.variants=S.dm.variants||[''];
+  S.dm.variants.push('');
+  renderDV(S.dm.variants);
+  const tas=document.getElementById('dv-list').querySelectorAll('textarea');
+  if(tas.length)tas[tas.length-1].focus();
+}
+
+function saveSlot(){
+  // Always collect from DOM first so nothing is lost
+  collectAVFromDOM();
+  const s=S.slots[S.activeSlot];
+  s.token=document.getElementById('a-tok').value.trim();
+  s.delay=parseInt(document.getElementById('a-dly').value)||180;
+  s.jitter=parseInt(document.getElementById('a-jit').value)||30;
+  s.channels=document.getElementById('a-chs').value.split(',').map(x=>x.trim()).filter(Boolean);
+  s.optJitter=document.getElementById('o-jit').checked;
+  s.optShuffle=document.getElementById('o-shuf').checked;
+  s.optVariant=document.getElementById('o-var').checked;
+  s.optMicro=document.getElementById('o-mic').checked;
+  svS();toast(`Slot ${S.activeSlot} saved`,'success');log(`💾 Slot ${S.activeSlot} saved`,'ls');
+}
+
+function addSlot(){
+  const ids=Object.keys(S.slots).map(Number);
+  if(ids.length>=5)return toast('Max 5 slots','error');
+  const nid=String(Math.max(...ids)+1);
+  S.slots[nid]=DEF();S.activeSlot=nid;svS();renderSlots();loadSlotUI();
+  log(`➕ Slot ${nid} created`,'li');
+}
+
+function delSlot(){
+  const ks=Object.keys(S.slots);
+  if(ks.length<=1)return toast('Cannot delete last slot','error');
+  const s=S.slots[S.activeSlot];if(s.running)stopSlot();
+  delete S.slots[S.activeSlot];
+  S.activeSlot=Object.keys(S.slots)[0];
+  svS();renderSlots();loadSlotUI();log('🗑️ Slot deleted','lw');
+}
+
+async function loadSupportInfo(){
+  const el=document.getElementById('support-info');if(!el)return;
+  const sess=getSess();
+  if(!sess){el.innerHTML='<div style="color:var(--mut)">Not logged in.</div>';return;}
+  const r=await apiDB('get_accounts');
+  const acc=(r?.ok?r.data:{})[sess.username]||{};
+  const exp=acc.keyExp||sess.keyExp;
+  let expStr='–';let expColor='var(--txt)';
+  if(exp==='inf'){expStr='♾️ Lifetime';expColor='var(--ac3)';}
+  else if(exp){
+    const rem=exp-Date.now()/1000;
+    if(rem<=0){expStr='❌ Expired';expColor='var(--dng)';}
+    else{
+      const d=Math.floor(rem/86400),h=Math.floor((rem%86400)/3600),m=Math.floor((rem%3600)/60);
+      expStr=d>0?`${d}d ${h}h remaining`:h>0?`${h}h ${m}m remaining`:`${m}m remaining`;
+      expColor=rem<3600?'var(--dng)':rem<86400?'var(--wrn)':'var(--ac3)';
+    }
+  }
+  el.innerHTML=`
+    <div>👤 <span style="color:var(--mut)">Username:</span> <span style="color:var(--ac)">${sess.username}</span></div>
+    <div>⏳ <span style="color:var(--mut)">License:</span> <span style="color:${expColor}">${expStr}</span></div>
+    <div>📡 <span style="color:var(--mut)">Slots active:</span> <span style="color:var(--ac)">${Object.values(S.slots).filter(s=>s.running).length} / ${Object.keys(S.slots).length}</span></div>
+    <div>💬 <span style="color:var(--mut)">DM bot:</span> <span style="color:${S.dm.running?'var(--ac3)':'var(--dng)'}">${S.dm.running?'Running':'Stopped'}</span></div>
+    <div>📊 <span style="color:var(--mut)">Stats:</span> <span style="color:var(--ac)">${S.stats.ads||0} ads sent</span> · <span style="color:var(--ac2)">${S.stats.dms||0} DMs replied</span></div>
+  `;
+}
+function panelInit(){
+  document.getElementById('d-tok').value=S.dm.token||'';
+  document.getElementById('d-dly').value=S.dm.delay||5;
+  document.getElementById('d-cd').value=S.dm.cooldown||60;
+  document.getElementById('d-cut').value=S.dm.cutoff||5;
+  document.getElementById('d-en').checked=S.dm.enabled||false;
+  document.getElementById('d-old').checked=S.dm.skipOld??true;
+  document.getElementById('d-typ').checked=S.dm.typing??true;
+  document.getElementById('d-var').checked=S.dm.useVar??true;
+  renderDV(S.dm.variants||['']);
+  document.getElementById('s-ads').textContent=S.stats.ads||0;
+  document.getElementById('s-dms').textContent=S.stats.dms||0;
+  renderSlots();loadSlotUI();
+  // ── Auto-resume any slots that were running before refresh ──
+  let resumed=0;
+  Object.keys(S.slots).forEach(id=>{
+    if(S.slots[id]._wasRunning){
+      S.slots[id].running=true;
+      delete S.slots[id]._wasRunning;
+      svS();renderSlots();loadSlotUI();
+      log(`♻️ Resuming Slot ${id} (was running before refresh)`,'ls');
+      advLoop(id);
+      resumed++;
+    }
+  });
+  // ── Auto-resume DM bot if it was running ──
+  if(S.dm._wasRunning){
+    S.dm.running=true;
+    delete S.dm._wasRunning;
+    svS();
+    log('♻️ Resuming DM bot (was running before refresh)','ls');
+    document.getElementById('btn-ds').disabled=true;
+    document.getElementById('btn-dp').disabled=false;
+    const p=document.getElementById('dpill');p.textContent='● RUNNING';p.className='pill';
+    dmLoop();
+  }
+  if(resumed>0)toast(`Resumed ${resumed} slot${resumed>1?'s':''}!`,'success');
+  if(S.dm.running)toast('DM bot resumed!','success');
+  log('✅ Bear panel ready','ls');
+}
+</script>
+</body>
+</html>

