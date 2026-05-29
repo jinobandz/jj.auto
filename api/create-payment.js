@@ -2,11 +2,11 @@
 // Creates a pending payment order and returns wallet address + amount
 
 const PLANS = {
-  '1H': { usd: 0.01,  seconds: 3600,     label: '1 Hour' },
-  '1D': { usd: 0.8,  seconds: 86400,    label: '1 Day' },
-  '1W': { usd: 2,  seconds: 604800,   label: '1 Week' },
-  '1M': { usd: 5, seconds: 2592000,  label: '1 Month' },
-  'LT': { usd: 10, seconds: null,     label: 'Lifetime' },
+  '1H': { usd: 0.1,  seconds: 3600,     label: '1 Hour' },
+  '1D': { usd: 1,  seconds: 86400,    label: '1 Day' },
+  '1W': { usd: 3,  seconds: 604800,   label: '1 Week' },
+  '1M': { usd: 6, seconds: 2592000,  label: '1 Month' },
+  'LT': { usd: 12, seconds: null,     label: 'Lifetime' },
 };
 
 const WALLETS = {
