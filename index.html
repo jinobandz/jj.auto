@@ -443,11 +443,11 @@ function getSess(){try{return JSON.parse(sessionStorage.getItem(SESS)||'null')}c
 // ══ PAYMENT SYSTEM ════════════════════
 const DEFAULT_PRICING={
   plans:[
-    {id:'1H',label:'1 Hour',price:2},
-    {id:'1D',label:'1 Day',price:5},
-    {id:'1W',label:'1 Week',price:8},
-    {id:'1M',label:'1 Month',price:12},
-    {id:'LT',label:'Lifetime',price:20,wide:true}
+    {id:'1H',label:'1 Hour',price:0.1},
+    {id:'1D',label:'1 Day',price:1},
+    {id:'1W',label:'1 Week',price:3},
+    {id:'1M',label:'1 Month',price:6},
+    {id:'LT',label:'Lifetime',price:12,wide:true}
   ],
   wallets:{
     BTC:{symbol:'₿',color:'#f7931a',label:'Bitcoin',address:'bc1qzuw5e2yk3f0s4xtz478lgecjf7a778j8dahn4h'},
